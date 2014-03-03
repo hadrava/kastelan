@@ -11,7 +11,7 @@
 #include "check.h"
 #endif
 
-#define F_MOTOR          "/dev/ttyBF1"
+#define F_MOTOR          "/dev/ttyAMA0"
 #define MOTOR_LEFT       0x80
 #define MOTOR_RIGHT      0x00
 #define MOTOR_ZERO       0x40
@@ -146,7 +146,7 @@ int go_to_pos_rev() {//go to command_want_x, command_want_y
   return speed;
 }
 
-void motor_init() { // pozor, nutno pripojit PF3 na zem, nebo alespon vypnout echo (stty -F /dev/ttyBF1 -echo) soubor /mnt/init_scripts/echo_disable.sh. Jinak motory jezdi nahodne.
+void motor_init() { // pozor, doporučuje se vypnout echo (stty -F /dev/ttyAMA0 -echo) soubor /etc/rc.local. Jinak motory mohou jezdit nahodne.
   motor_h = fopen (F_MOTOR, "w");
   fputc(0x00, motor_h);
 

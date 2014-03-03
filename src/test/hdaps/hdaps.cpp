@@ -25,7 +25,7 @@ void uart1SendChar(unsigned char s){
 }
 
 void motor_init() {
-  MOTOR_fil = fopen ("/dev/ttyBF1","w");
+  MOTOR_fil = fopen ("/dev/ttyAMA0","w");
   uart1SendChar(0x00);
 }
 
