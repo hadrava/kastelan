@@ -7,6 +7,7 @@
 #define ADDRESS_GPIO    0x27
 #define ADDRESS_TAOS    0x71
 #define ADDRESS_SERVO   0x73
+#define ADDRESS_ENCODER 0x30
 
 #define TAOS_PSSR       0x00
 #define TAOS_PSSR_GC    (1<<2)
@@ -52,5 +53,12 @@ bool i2c_start_cable_present();
 void i2c_get_bumpers(u08* value);
 void i2c_taos_sort_enable();
 void i2c_taos_sort_disable();
+
+int i2c_init_encoder();
+int i2c_close_encoder();
+
+int i2c_init_encoder();
+int i2c_close_encoder();
+unsigned int i2c_encoder_get();
 
 #endif

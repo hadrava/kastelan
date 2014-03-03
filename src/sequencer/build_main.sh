@@ -6,7 +6,7 @@ cd ..
 . ../config
 prepare_build_arm
 
-bfin-uclinux-g++ -I src/common \
+g++ -I src/common \
     -o build_arm/main \
     -pthread \
     src/sequencer/main.cpp \

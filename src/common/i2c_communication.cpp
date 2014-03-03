@@ -14,6 +14,7 @@ int fAD;
 int fGPIO;
 int fTAOS;
 int fSERVO;
+int fENCODER;
 
 inline int i2c_write(int file, void* buf, int size) {
   int r = write(file, buf, size);
@@ -60,7 +61,7 @@ int i2c_init() {
 }
 
 int i2c_init_gpio() {
-  fGPIO = i2c_open("/dev/i2c-0", ADDRESS_GPIO);
+  fGPIO = i2c_open("/dev/i2c-1", ADDRESS_GPIO);
 
   if (fGPIO != -1) {
     set_gpio_config();
@@ -71,12 +72,12 @@ int i2c_init_gpio() {
 }
 
 int i2c_init_ad() {
-  fAD = i2c_open("/dev/i2c-0", ADDRESS_AD);
+  fAD = i2c_open("/dev/i2c-1", ADDRESS_AD);
   return fAD == -1;
 }
 
 int i2c_init_taos() {
-  fTAOS = i2c_open("/dev/i2c-0", ADDRESS_TAOS);
+  fTAOS = i2c_open("/dev/i2c-1", ADDRESS_TAOS);
   if (fTAOS == -1)
     return -1;
 
@@ -85,7 +86,7 @@ int i2c_init_taos() {
 }
 
 int i2c_init_servo() {
-  fSERVO = i2c_open("/dev/i2c-0", ADDRESS_SERVO);
+  fSERVO = i2c_open("/dev/i2c-1", ADDRESS_SERVO);
   if (fSERVO == -1)
     return -1;
 
@@ -118,7 +119,7 @@ int i2c_taos_set_servo(u08 servo, u08 value) {
 int i2c_servo_set_servo(u08 servo, u08 value) {
   u08 buf[2];
   buf[0] = servo, buf[1] = value;
-  i2c_write(fTAOS, buf, 2);
+  i2c_write(fSERVO, buf, 2);
 }
 
 int i2c_taos_config() {
@@ -221,3 +222,28 @@ void i2c_taos_sort_disable() {
   i2c_write(fTAOS, buf, 2);
   i2c_taos_set_servo(TAOS_FLIPPER, taos_flipper_center);
 }
+
+int i2c_init_encoder() {
+  fENCODER = i2c_open("/dev/i2c-1", ADDRESS_ENCODER);
+
+  if (fENCODER != -1)
+    return 0;
+  else
+    return -1;
+}
+
+int i2c_close_encoder() {
+  return close(fENCODER);
+}
+
+unsigned int i2c_encoder_get() {
+  u08 buf[5];
+  buf[0] = 10;
+
+  if (i2c_write(fENCODER, buf, 1) < 0 || i2c_read(fENCODER, buf, 5) < 0) {
+    return 0;
+  }
+
+  return *((unsigned int *)buf);
+}
+

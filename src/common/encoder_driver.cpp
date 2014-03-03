@@ -5,12 +5,7 @@
 
 #include "encoder_driver.h"
 #include "variable_loader.h"
-
-#define F_ENCODER_LEFT   "/dev/enc0"
-#define F_ENCODER_RIGHT  "/dev/enc1"
-
-FILE *enc_l_h;
-FILE *enc_r_h;
+#include "i2c_communication.h"
 
 int enc_l_last;
 int enc_r_last;
@@ -28,8 +23,18 @@ inline void enc_read() {
   pthread_mutex_lock(&enc_lock);
 
   int enc_l_new, enc_r_new;
-  int len1 = fread (&enc_l_new, 4, 1, enc_l_h);
-  int len2 = fread (&enc_r_new, 4, 1, enc_r_h);
+  unsigned int both = i2c_encoder_get();
+  enc_l_new = (enc_l_last & 0xFFFF0000) | (both & 0xFFFF);
+  enc_r_new = (enc_r_last & 0xFFFF0000) | (both >> 16);
+  if (enc_l_new - enc_l_last > 0x8000)
+    enc_l_new -= 0x10000;
+  if (enc_l_last - enc_l_new > 0x8000)
+    enc_l_new += 0x10000;
+
+  if (enc_r_new - enc_r_last > 0x8000)
+    enc_r_new -= 0x10000;
+  if (enc_r_last - enc_r_new > 0x8000)
+    enc_r_new += 0x10000;
 
   int dl = enc_l_new - enc_l_last;
   int dr = enc_r_new - enc_r_last;
@@ -56,12 +61,17 @@ inline void enc_read() {
 inline void enc_reset() {
   pthread_mutex_lock(&enc_lock);
 
+  // TODO implement in atmega
+  /*
   fputc ('R', enc_l_h); // tak a je to tady, tohle nefunguje tak uplne nejlip (echo -n R > /dev/enc0) funguje
   fputc ('R', enc_r_h);
   fflush(enc_l_h);
   fflush(enc_r_h);
-  fread (&enc_l_last, 4, 1, enc_l_h);
-  fread (&enc_r_last, 4, 1, enc_r_h);
+  */
+  unsigned int both = i2c_encoder_get();
+  enc_l_last = both & 0xFFFF;
+  enc_r_last = both >> 16;
+
   pos_x = 0;
   pos_y = 0;
   pos_a = 0;
@@ -79,8 +89,8 @@ void *enc_loop(void *arg) {
 }
 
 void enc_init() {
-  enc_l_h = fopen (F_ENCODER_LEFT, "rw");
-  enc_r_h = fopen (F_ENCODER_RIGHT, "rw");
+  i2c_init_encoder();
+
   enc_reset();
   pos_time = 0;
 
@@ -95,8 +105,7 @@ void enc_close() {
   void *enc_loop_return;
   pthread_join(enc_loop_tid, &enc_loop_return);
 
-  fclose(enc_l_h);
-  fclose(enc_r_h);
+  i2c_close_encoder();
 }
 
 void enc_get(enc_type *position) {
