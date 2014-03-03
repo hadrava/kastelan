@@ -53,16 +53,16 @@ Propojení horní a dolní desky v robotovi
 +----------+
   napajeci konektor:
 
-  1       +6  nahoru k vypinaci SW1 (cerveny pruh)
-  2       +6  dolu  od vypinace SW1
-  3       +6  nahoru k vypinaci SW2 (cerveny pruh)
-  4       +6  dolu  od vypinace SW2
-  5       +12 nahoru k vypinaci (cerveny pruh)
-  6       +12 dolu  od vypinace
+  1       +12 nahoru k vypinaci elektronika SW1 (cerveny pruh)
+  2       +12 dolu  od vypinace elektronika SW1
+  3       +12 displej (cerveny pruh)
+  4       GND k vypinaci motory (docasne zem pro displej)
+  5       +12 nahoru k vypinaci motory SW1 (cerveny pruh)
+  6       +12 dolu  od vypinace motory SW1
   7       ---
-  8       +6  Blackfin (cerveny pruh)
-  9       GND Blackfin
-  10      GND SW1
+  8       +5  Pi (cerveny pruh)
+  9       GND Pi
+  10      GND k vypinaci elektronika
 
       |
    8     1
