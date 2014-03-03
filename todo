@@ -1,12 +1,29 @@
-zde jsou a budou zapisky ze schuzek + aktualni TODO list
+Elektronika TODO:
+  raspberry
+    UART - Sabertooth motory (stačí připojit drátem, není potřeba měnit napětí)
+    I2C - potřeba měnit napětí (okopírovat z desky)
+	klávesnici zahodit, radši dáme něco funkčního do USB
+	bumpery + startovací kabel - je tam i2c gpio expandér (něco jak MCP23017) - zachovat
+	Atmega8 TAOS: Nechat jak je maximálně doladit sw rychlejší kalibrace a případně logování
+	Atmega8 serva: Aktuální stav zřejmě stačí. Případně můžeme vyzkoušet znova SD20
+	Atmega enkodéry: Buď něco nového nebo půjčit od Ondry.
 
-TODO po soutěži:
-  opravit atmega servo:
-    opravit hack v i2c_servo_set_servo -- zmena filedescriptoru
-    vratit korektni konfiguraky -- ty upravene jsou jen na robotove SD karte v podadresari
-  pozorovani:
-    all_test by mel byt vzdy aktualni, jinak hrozi to, ze smaze z konfiguraku nektere polozky pro main, ktere nezna
-  zdokumentovat vše
+Měnit se tedy bude:
+  surveyor (UART + I2C) -> raspberry
+  enkodéry (surveyor -> atmega)
+
+úpravy na desce:
+  odstranit měnič na 3.3V (raspberry má vlastní z 5V)
+  potřeba silnějšího zdroje 5V
+  odstranit 74LVC245 (gpio raspberry nebudeme používat)
+  odstranit SD kartu
+  (ADC a SD20 bychom rádi naopak uvedli do provozu)
+
+
+  atmega s červenou a modrou ledkou + tlačítko.
+    nebo trovnou i detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
+
+SW TODO:
   přidat šikovnější funkce na zápis strategie
     relativní pohyb
     emergency run
@@ -15,22 +32,28 @@ TODO po soutěži:
     timestamp
   doobrátit stavový automat tak, jak má být
   možná: hermitovské křivky
-  checklist do gitu (v rozumném formátu)
   virtuální bumpery
-  čtení strategie ze souboru pro pevnou procházku
-  ukázková jízda
-  po nabootování spustit main pokud je zasunutý kabel
-    detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
+
+
+SW detaily:
   vypnout main zasunutím startovacího kabelu
     automaticky by se měl spustit znovu (externí while cyklus)
   v terminálu bude skript na vypnutí cyklu a zabití mainu
     (vypnutí cyklu by mohlo fungovat nějak jako smazání souboru v tmpfs)
+
+HW TODO:
+  přidat přední záklopku pro couvání.
+    kus plechu, který bude jezdit v item profilech
+    stačí ho zvedat.
+    dolu padne vlastní vahou -> neohnem si páčku pokud tam bude puk
+
 
  starší todo
   pravy enkoder ma u motoru spatny kabel, obcas to nemeri (projevuje se to tak, ze robot kousek popojede a pak se kolem leveho kola zacne tocit na miste)
   software
     atmega_servo: zemnit vypnuta serva (nebo pullupy?)
   proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
+
 
 streda 20. 3. 2013
   David, Jenda, Marek (virtualne - software)
