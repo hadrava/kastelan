@@ -1,0 +1,26 @@
+PRIPRAVA
+Doporucuji nejprve v adresari source pustit skript
+
+./download_uclinux.sh
+
+Tim se zdrojaky stahnou a pro dalsi pripadne kompilace nebude
+potreba pripojovat se k internetu.
+
+
+KOMPILACE
+Pro automatickou kompilaci staci spustit skript (z originalniho umisteni)
+
+./build_script.sh
+
+Staci zadat novy nazev buildu (napr. 12_02_09_uclinux) a vytvoreni obrazu
+nahratelneho do robota jiz probehne automaticky.
+
+UPRAVA
+Veskere upravy ukladejte do patchu v adresari source. Pokud se maji aplikovat
+automaticky, pouzijte skript source/patch.sh
+
+MAJOR/MINOR
+cat /sys/class/srv1-mcp23017/kbd0/dev
+
+TODO
+zdokumentovat jak se pridava modul -- diff commitu s timto textem a  predchoziho

@@ -1,0 +1,68 @@
+Nezavisly modul na trideni puku:
+
+Pouzijeme atmegu8
+Chceme:
+ - komunikovat pres i2c
+ - cist senzor
+ - generovat pwm pro servo
+
+pwm muzeme generovat hardwarove
+cteni senzoru bude zarucene vyzadovat interrupty
+proto i2c muze bezet klidne pollovane
+
+Jake prikazy by mely byt na rozhrani atmega <--> blackfin:
+// - cti barvu rgbw a posli rgbw (vsechny slozky musi byt namerene temer soucasne)
+// - nastav servo na pozici X
+// - zapni vypni svetlo detektoru barvy (kdo vi, jestli to lze)
+
+// - nastav si konstanty:
+//   * hodnota serva pro levou a pravou prihradku a pro stred
+ - nastav pravidla na detekci barvy (tady je potreba jeste trochu premyslet)
+// - nastav timeout jak dlouho nechat servo na prepnute po konci detekce puku
+
+// - zacni tridit / prestan tridit
+
+ - precti / nastav pocet puku vytrizenych puku
+ - vezmi nerozlisitelne barvy
+
+
+
+aktualni spusteni
+i2cset -y 0 0x71 0x07 0x9F
+i2cset -y 0 0x71 0x06 0x1D
+i2cset -y 0 0x71 0x08 0x60
+i2cset -y 0 0x71 0x00 0x0A
+
+-----
+tato verze pouziva jako senzor barvy fototranzistor pripojeny na ADC
+aby se odlisily barvy, je potreba blikat stridave cervenou a modrou ledkou
+
+tento kod umi doopravdy tridit, ale je trochu nedopsany nepoklizeny, pomaly a vubec spatny
+-----
+
+strucny popis i2c protokolu
+
+Adresa = 0x71 (resp 0xE2 a 0xE3 pro cteni a zapis zvlast)
+
+
+PSSR   0x00  Status Register
+  pouzivaji se jen nektere bity:
+    PSFE   3 (0x08)  Flipper enable
+      Povoli generovani PWM signalu
+    PSGC   2 (0x04)  Get color
+      Precte ze senzoru barvu a ulozi nejak do registru 0x01-0x04 (0x01 je asi nepouzitelny)
+    PSSE   1 (0x02)  Sort Enable
+      Zapne automaticke trideni puku (aby to spravne fungovalo, musi byt zapnuty take PSFE)
+    PSLE   0
+      Zapina a odpojuje PB0
+
+PSFPR  0x06  Flipper Position Red
+PSFPB  0x07  Flipper Position Blue
+PSFPC  0x08  Flipper Position Center
+  Nastaveni pozic serva pro automaticke trideni
+
+PSFP   0x09  Flipper Position
+PSF2P  0x0A  Flipper2 Position
+  Nastaveni prvniho a druheho serva
+
+
