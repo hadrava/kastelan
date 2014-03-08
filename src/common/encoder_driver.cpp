@@ -26,10 +26,13 @@ inline void enc_read() {
   unsigned int both = i2c_encoder_get();
   enc_l_new = (enc_l_last & 0xFFFF0000) | (both & 0xFFFF);
   enc_r_new = (enc_r_last & 0xFFFF0000) | (both >> 16);
+  printf("DEBUG: both                                                                                                                 %x\n", both);
+  printf("DEBUG: befor hop %x\n", enc_l_new);
   if (enc_l_new - enc_l_last > 0x8000)
     enc_l_new -= 0x10000;
   if (enc_l_last - enc_l_new > 0x8000)
     enc_l_new += 0x10000;
+  printf("DEBUG: after hop %x\n", enc_l_new);
 
   if (enc_r_new - enc_r_last > 0x8000)
     enc_r_new -= 0x10000;

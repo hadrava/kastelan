@@ -62,6 +62,7 @@ int i2c_init() {
 
 int i2c_init_gpio() {
   fGPIO = i2c_open("/dev/i2c-1", ADDRESS_GPIO);
+  printf("i2c: gpio:file %d\n", fGPIO);
 
   if (fGPIO != -1) {
     set_gpio_config();
@@ -73,11 +74,13 @@ int i2c_init_gpio() {
 
 int i2c_init_ad() {
   fAD = i2c_open("/dev/i2c-1", ADDRESS_AD);
+  printf("i2c: ad:file %d\n", fAD);
   return fAD == -1;
 }
 
 int i2c_init_taos() {
   fTAOS = i2c_open("/dev/i2c-1", ADDRESS_TAOS);
+  printf("i2c: taos:file %d\n", fTAOS);
   if (fTAOS == -1)
     return -1;
 
@@ -87,6 +90,7 @@ int i2c_init_taos() {
 
 int i2c_init_servo() {
   fSERVO = i2c_open("/dev/i2c-1", ADDRESS_SERVO);
+  printf("i2c: servo:file %d\n", fSERVO);
   if (fSERVO == -1)
     return -1;
 
@@ -225,6 +229,7 @@ void i2c_taos_sort_disable() {
 
 int i2c_init_encoder() {
   fENCODER = i2c_open("/dev/i2c-1", ADDRESS_ENCODER);
+  printf("i2c: encoder:file %d\n", fENCODER);
 
   if (fENCODER != -1)
     return 0;
@@ -236,12 +241,38 @@ int i2c_close_encoder() {
   return close(fENCODER);
 }
 
-unsigned int i2c_encoder_get() {
-  u08 buf[5];
-  buf[0] = 10;
+u08 _crc_ibutton_update(u08 crc, u08 data) {
+        u08 i;
+        crc = crc ^ data;
+        for (i = 0; i < 8; i++)
+                if (crc & 0x01)
+                        crc = (crc >> 1) ^ 0x8C;
+                else
+                        crc >>= 1;
+        return crc;
+}
 
-  if (i2c_write(fENCODER, buf, 1) < 0 || i2c_read(fENCODER, buf, 5) < 0) {
-    return 0;
+
+unsigned int i2c_encoder_get() {
+  u08 notok = 1;
+  u08 buf[5];
+  while (notok) {
+    notok = 0;
+    buf[0] = 10;
+
+    if (i2c_write(fENCODER, buf, 1) < 0 || i2c_read(fENCODER, buf, 5) < 0) {
+      return 0;
+    }
+
+    u08 crc = 0;
+    crc = _crc_ibutton_update(crc, buf[0]);
+    crc = _crc_ibutton_update(crc, buf[1]);
+    crc = _crc_ibutton_update(crc, buf[2]);
+    crc = _crc_ibutton_update(crc, buf[3]);
+    if (crc != buf[4]) {
+      printf("ENCODER: CRC: ERROR\n");
+      notok = 1;
+    }
   }
 
   return *((unsigned int *)buf);
