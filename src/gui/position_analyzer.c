@@ -154,6 +154,7 @@ void *scanf_loop(void *arg) {
        history_bumpers[history_akt]=tb;
        history_akt = (history_akt+1) % HISTORY_SIZE;
       pthread_mutex_unlock(&scanf_lock);
+      usleep(2000);// i tak dojde ke zdržení
     }
     if (string[0]=='e') {
       char str[40];
@@ -202,7 +203,6 @@ void *scanf_loop(void *arg) {
        history_akt = (history_akt+1) % HISTORY_SIZE;
       pthread_mutex_unlock(&scanf_lock);
     }
-//    usleep(100);
   }
 }
 
@@ -252,6 +252,7 @@ int main() {
       case MapNotify:
       case Expose:
       case ConfigureNotify:
+      default:
         paint(w);
         break;
     }
