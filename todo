@@ -1,28 +1,3 @@
-Elektronika TODO:
-  raspberry
-    UART - Sabertooth motory (stačí připojit drátem, není potřeba měnit napětí)
-    I2C - potřeba měnit napětí (okopírovat z desky)
-	klávesnici zahodit, radši dáme něco funkčního do USB
-	bumpery + startovací kabel - je tam i2c gpio expandér (něco jak MCP23017) - zachovat
-	Atmega8 TAOS: Nechat jak je maximálně doladit sw rychlejší kalibrace a případně logování
-	Atmega8 serva: Aktuální stav zřejmě stačí. Případně můžeme vyzkoušet znova SD20
-	Atmega enkodéry: Buď něco nového nebo půjčit od Ondry.
-
-Měnit se tedy bude:
-  surveyor (UART + I2C) -> raspberry
-  enkodéry (surveyor -> atmega)
-
-úpravy na desce:
-  odstranit měnič na 3.3V (raspberry má vlastní z 5V)
-  potřeba silnějšího zdroje 5V
-  odstranit 74LVC245 (gpio raspberry nebudeme používat)
-  odstranit SD kartu
-  (ADC a SD20 bychom rádi naopak uvedli do provozu)
-
-
-  atmega s červenou a modrou ledkou + tlačítko.
-    nebo trovnou i detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
-
 SW TODO:
   přidat šikovnější funkce na zápis strategie
     relativní pohyb
@@ -33,103 +8,39 @@ SW TODO:
   doobrátit stavový automat tak, jak má být
   možná: hermitovské křivky
   virtuální bumpery
+  atmega_servo: zemnit vypnuta serva (nebo pullupy?)
+    proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
+  online kalibrace taosu
+    Atmega8 TAOS: Nechat jak je maximálně doladit sw rychlejší kalibrace a případně logování
+    nebo rovnou i detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
+    /atmega s červenou a modrou ledkou + tlačítko.
+
+SW bugy:
+  atmega na enkodery dělá clock stretching, pak čteme špatná data
 
 
 SW detaily:
   vypnout main zasunutím startovacího kabelu
     automaticky by se měl spustit znovu (externí while cyklus)
-  v terminálu bude skript na vypnutí cyklu a zabití mainu
-    (vypnutí cyklu by mohlo fungovat nějak jako smazání souboru v tmpfs)
+    v terminálu bude skript na vypnutí cyklu a zabití mainu
+      (vypnutí cyklu by mohlo fungovat nějak jako smazání souboru v tmpfs)
 
 HW TODO:
+  vyrobit desku pro raspberry
   přidat přední záklopku pro couvání.
     kus plechu, který bude jezdit v item profilech
     stačí ho zvedat.
     dolu padne vlastní vahou -> neohnem si páčku pokud tam bude puk
-
-
- starší todo
   pravy enkoder ma u motoru spatny kabel, obcas to nemeri (projevuje se to tak, ze robot kousek popojede a pak se kolem leveho kola zacne tocit na miste)
-  software
-    atmega_servo: zemnit vypnuta serva (nebo pullupy?)
-  proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
+  stavba noveho hriste: kečup z druhé strany?
+
+HW deska:
+  odstranit měnič na 3.3V (raspberry má vlastní z 5V)
+  potřeba silnějšího zdroje 5V
+  odstranit 74LVC245 (gpio raspberry nebudeme používat)
+  odstranit SD kartu
+  (ADC a SD20 bychom rádi naopak uvedli do provozu)
 
 
-streda 20. 3. 2013
-  David, Jenda, Marek (virtualne - software)
-  otestovan startovaci kabel, funguje to
-  problemy se sabertoothem byly zpusobeny zapnutym echo na ttyBF1 (chytal se tam bordel)
-  overeny vsechny barvy taosu
-
-utery 19. 3. 2013
-  David, Honza, Jenda, Pavel
-  odhrnovac puku i za kola
-  prichycen dole kabel k tridicimu servu
-  pripevnen startovaci kabel, nutno otestovat
-  klavesnice se nebude nikam pripevnovat, bude se schovavat pod kopcem
-  hotove nozicky horni desky
-  pripravit ovladani robota naklonem z notebooku od Dellu zatim odlozeno (neni vubec jiste, ze tam je gyroskop)
-
-sobota 16., nedele 17. 3. 2013
-  Honza, Pavel, David
-  prichytit dole draty - hlavne kabel k tridicimu servu
-  stavba noveho hriste
-  pretreni puku
-  nátěr kopce a bumperů na zeleno
-
-patek 15. 3. 2013
-  Jenda, Marek
-  piseme software
-  zjistili jsme, ze potrebujeme odstrkovat puky i za koly (fakt se zasekavame az to neni prijemne)
-
-streda 13. 3. 2013
-  David, Jenda, Marek
-  vymena hlavice nouzoveho tlacitka za vypinac
-  zkalibrovano tridici servo
-  vyzvednuty desky pro atmega_taos od Kohouta nakonec to vyslo na 95 korun
-  kvuli pukum odstranena predni vodorovna tyc
-  zkraceny zadni bumpery
-    tim, ze jsme predelali diry do stejne vzdalenosti jako panty se uz opravilo spinani praveho zadniho bumperu
-
-utery 12. 3. 2013
-  David, Honza, Jenda, Pavel
-  pridan odhrnovac puku pred kola
-  slepen stojan na blackfin
-  mozna opraven kabel k enkoderum (piny zpet zasunuty do konektoru)
-  umistena klavesnice
-  startovaci kabel
-  vytvoreny sw atmega_servo, je funkcni, lze s nim ovladat zaklopky
-  nainstalovany atmega taos alespon na bastldesce
-
-pondeli 11. 3. 2013
-  Jenda
-  objednana deska u Kohouta
-  predelany software atmega taos na spravne piny
-
-sobota 9. 3. 2013
-  David, Jenda, Marek, Pavel
-  pridelane vypinace elektronika a jeden motorovy, druhy motorovy je potreba dodelat
-  hotove vertikalni napajeci propojeni, propipano, vyzkouseno
-  dodelane nabijeci konektory
-  doladena deska pro atmega taos
-  jezdime dle stareho programu a dokonce vyhravame
-
-patek 8. 3. 2013
-  Jenda, Marek
-  hotove vertikalni datove propojeni, propipano
-  pripevnen kryt na tridici servo
-
-streda 6. 3. 2013
-  Marek, Jenda
-  oprava dokumentace vertikalnich rozvodu v gitu
-  pripevnene nabijeci konektory (nad levym kolem)
-  vertikalni napajeci konektor je dole jiz hotovy (oprava z utery)
-  plastovy kryt na tridici servo je vyriznuty podle potreby
-  pripravena krabice pro prevoz robota
-
-utery 5. 3. 2013
-  vsichni
-  temer hotove napajeci rozvody dole
-  vertikalni napajeni pripevneny konektor
-
-a starsi... nebudu to zpetne dopisovat, stejne to nikdo cist nebude...
+HW detaily:
+  zdokumentovat zapojení na raspberry
