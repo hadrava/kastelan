@@ -1,3 +1,0 @@
-obecne rady:
-
-vlakna inicializovat pouze na zacatku programu (mame malo pameti a je dost segmentovana)
