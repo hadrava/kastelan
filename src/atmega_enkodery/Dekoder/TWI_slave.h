@@ -36,7 +36,7 @@
   TWI Status/Control register definitions
 ****************************************************************************/
 
-#define TWI_BUFFER_SIZE 8      // Reserves memory for the drivers transceiver buffer. 
+#define TWI_BUFFER_SIZE 16      // Reserves memory for the drivers transceiver buffer. 
                                // Set this to the largest message size that will be sent including address byte.
 
 /****************************************************************************
@@ -57,7 +57,7 @@ union TWI_statusReg_t                       // Status byte holding flags.
 
 extern union TWI_statusReg_t TWI_statusReg;
 
-static unsigned char dont_sleep = 0;
+//static unsigned char dont_sleep = 0; k cemu to tu bylo?
 
 /****************************************************************************
   Function definitions

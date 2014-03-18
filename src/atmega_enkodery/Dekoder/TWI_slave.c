@@ -45,7 +45,7 @@ static unsigned char TWI_state    = TWI_NO_STATE;  // State byte. Default set to
 // This is true when the TWI is in the middle of a transfer
 // and set to false when all bytes have been transmitted/received
 // Also used to determine how deep we can sleep.
-static unsigned char TWI_busy = 0;
+volatile static unsigned char TWI_busy = 0;
 
 union TWI_statusReg_t TWI_statusReg = {0};           // TWI_statusReg is defined in TWI_Slave.h
 
