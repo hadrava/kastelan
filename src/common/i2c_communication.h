@@ -30,6 +30,8 @@ int i2c_init_taos();
 int i2c_init_servo();
 int i2c_close();
 int i2c_taos_config();
+int i2c_taos_config_servo();
+int i2c_taos_config_white();
 void i2c_taos_get_color();
 void i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w);
 int i2c_taos_set_servo(u08 servo, u08 value);

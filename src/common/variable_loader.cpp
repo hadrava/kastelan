@@ -28,6 +28,10 @@ char ourside;
 int taos_flipper_center;
 int taos_flipper_left;
 int taos_flipper_right;
+int taos_white_w;
+int taos_white_r;
+int taos_white_b;
+int taos_white_thr;
 int servo_left_open;
 int servo_left_close;
 int servo_right_open;
@@ -70,6 +74,10 @@ int var_load(const char filename[]) {
     LOAD_VAR("%d", taos_flipper_center)
     LOAD_VAR("%d", taos_flipper_left)
     LOAD_VAR("%d", taos_flipper_right)
+    LOAD_VAR("%d", taos_white_w)
+    LOAD_VAR("%d", taos_white_r)
+    LOAD_VAR("%d", taos_white_b)
+    LOAD_VAR("%d", taos_white_thr)
     LOAD_VAR("%d", servo_left_open)
     LOAD_VAR("%d", servo_left_close)
     LOAD_VAR("%d", servo_right_open)
@@ -113,6 +121,10 @@ int var_save(const char filename[]) {
   SAVE_VAR("%s %d\n", taos_flipper_center)
   SAVE_VAR("%s %d\n", taos_flipper_left)
   SAVE_VAR("%s %d\n", taos_flipper_right)
+  SAVE_VAR("%s %d\n", taos_white_w)
+  SAVE_VAR("%s %d\n", taos_white_r)
+  SAVE_VAR("%s %d\n", taos_white_b)
+  SAVE_VAR("%s %d\n", taos_white_thr)
   SAVE_VAR("%s %d\n", servo_left_open)
   SAVE_VAR("%s %d\n", servo_left_close)
   SAVE_VAR("%s %d\n", servo_right_open)
