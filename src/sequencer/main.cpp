@@ -6,7 +6,7 @@
 #include "variable_loader.h"
 #include "i2c_communication.h"
 #include "led_driver.h"
-#include "matrix_driver.h"
+#include "input_event_driver.h"
 #include "encoder_driver.h"
 #include "motor_driver.h"
 #include "our_time.h"
@@ -260,7 +260,7 @@ int init_systems() {
 
   led_init();
   printf("init_systems: 1\n");
-  matrix_init();
+  input_event_init();
   printf("init_systems: 2\n");
   enc_init();
   printf("init_systems: 3\n");
@@ -283,7 +283,7 @@ int shut_systems() {
   printf("shut_systems: 2\n");
   enc_close();
   printf("shut_systems: 3\n");
-  matrix_close();
+  input_event_close();
   printf("shut_systems: 4\n");
   led_close();
   printf("shut_systems: done\n");
