@@ -42,6 +42,11 @@ unsigned char update=0;
 unsigned char mereni_color=0;
 unsigned char mereni=0;
 
+int white_w = 2260; // Hodnota bile barvy.
+int white_r = 840;
+int white_b = 956;
+int white_thr= 1792; // Prah, vsechna mensi cisla jsou puky, vsechna vetsi je bila barva
+
 ISR(TIMER0_OVF_vect) {
   mereni++;
   if (mereni == 0) //saturation
@@ -66,10 +71,10 @@ ISR(TIMER1_CAPT_vect) { //presne 50Hz
         PORTC &= 0xFE;
         PORTC |= 0x02;
       }
-      if (regs[PSCWH] < 7) {// PSCW < 1792 // klidne by se dalo i podle nizzsi slozky (kdy bude potreba, tak se to muze zmenit)
-        int dw = 2260 - (regs[PSCWH] << 8) - regs[PSCWL];// toto jsou hodnoty bile barvy (od ni se odecte aktualni)
-        int dr =  840 - (regs[PSCRH] << 8) - regs[PSCRL];
-        int db =  956 - (regs[PSCBH] << 8) - regs[PSCBL];
+      if (((regs[PSCWH] << 8) + regs[PSCWL]) < white_thr) {// PSCW < prah
+        int dw = white_w - (regs[PSCWH] << 8) - regs[PSCWL];// toto jsou hodnoty bile barvy (od ni se odecte aktualni)
+        int dr = white_r - (regs[PSCRH] << 8) - regs[PSCRL];
+        int db = white_b - (regs[PSCBH] << 8) - regs[PSCBL];
 
         if ((dw/8) > (db - dr)) {// je to modrejsi (modry puk ma pravou zavorku temer nulovou, cerveny puk hodne velkou radove 340) Pokud je mezi cervenymi puky i modry, tak bychom meli pravou stranu zvysit (snizit delitele)
           OCR1A = STD_SERVO_OFFSET + (regs[PSFPB]<<1);
@@ -188,7 +193,7 @@ int main(void) {
           TWCR |= (1<<TWINT) | (1<<TWEA);
       }
       else if ((TWSR & 0xF8) == 0xA8) { //slave transmitt
-        while ((TWSR & 0xE8) == 0xA8) { // ACK has been returned (sla+r || data send)
+       do {
           if (answr <= PSFPC)
             TWDR = regs[answr];
           if (answr == PSFP)
@@ -205,7 +210,7 @@ int main(void) {
           answr++;
 
           TWI_WAIT();
-        }
+        } while ((TWSR & 0xE8) == 0xA8); // ACK has been returned (sla+r || data send)
 
         if ((TWSR & 0xF0) == 0xC0) //0xC0 or 0xC8
           TWCR |= (1<<TWINT) | (1<<TWEA);
