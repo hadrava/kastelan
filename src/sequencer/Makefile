@@ -12,6 +12,10 @@ all: ../../build_arm/main
 	g++ -o $@ -pthread $(notdir $^)
 
 run: ../../build_arm/main
+	sudo stty -F /dev/ttyAMA0 -echo
+	sudo stty -F /dev/ttyAMA0 ospeed 9600 2> /dev/null
+	sudo stty -F /dev/ttyAMA0 ispeed 9600
+	sudo stty -F /dev/ttyAMA0 ospeed 9600
 	cd ../../build_arm/; \
 	  sudo ./main || true
 
