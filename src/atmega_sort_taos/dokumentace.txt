@@ -20,7 +20,7 @@ PSSR   0x00 Status Register
 Defaultní hodnota: 0x00
   každý bit má svůj vlastní význam
   +--------+--------+--------+--------+--------+--------+--------+--------+
-  | PSCSR  | PSCSRT | PSCSB  | PSCSBT |  PSFE  |  PSGC  |  PSSE  |  PSLE  |
+  |  PSSW  |  PSST  | PSCSB  | PSCSBT |  PSFE  |  PSGC  |  PSSE  |  PSLE  |
   +--------+--------+--------+--------+--------+--------+--------+--------+
    7 (MSB)                                                         0 (LSB)
 
@@ -35,10 +35,17 @@ Defaultní hodnota: 0x00
   PSFE (0x08) Flipper Enable
     pokud je bit nastaven na hodnotu 1, jsou generovány PWM signály pro obě serva, při zapsané 0 jsou oba piny nakonfigurované jako vstupní
 
-  PSSE (0x02) Sort Enable bude v budoucnosti zapínat automatické třídění
+  PSSE (0x02) Sort Enable
+    zapnutí a vypnutí automatického třídění
+
+  PSSW (0x80) Set White
+    nastavení referenční bílé barvy dle aktuálního obsahu registrů PSCR, PSCB a PSCW
+
+  PSST (0x40) Set Threshold
+    nastavení hranice mezi puky a bílou barvou dle obsahu PSCW
 
   Ostatní bity zatím nemají svou funkci implementovánu
-    horní 4 jsou plánované pro nastavování hodnot a tolerance červené a modré (Color Set [Red | Blue] [Tolerance]) (bylo myšleno, že se nškam uloží aktuální hodnota registrů měřících barvu)
+    horní 4 jsou plánované pro nastavování hodnot a tolerance červené a modré (Color Set [Red | Blue] [Tolerance]) (bylo myšleno, že se někam uloží aktuální hodnota registrů měřících barvu)
 
 následující hodnoty jsou konzistentní pouze pokud zrovna neprobíhá měření (bit PSGC v registru PSSR je nastaven na 0)
 PSCRL  0x01 Color Red Low

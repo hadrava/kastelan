@@ -5,8 +5,8 @@
 
 #define I2C_ADDRESS 0x71
 
-#define PSCSR  7
-#define PSCSRT 6
+#define PSSW   7
+#define PSST   6
 #define PSCSB  5
 #define PSCSBT 4
 #define PSFE   3
@@ -99,11 +99,13 @@ inline void update_status() {
   if (regs[PSSR] & (1<<PSSE)) {
     regs[PSSR] |= (1<<PSGC);// PSSE znamena, ze se sbira barva
   }
-  if (regs[PSSR] & (1<<PSCSR)) {
-    //todo
+  if (regs[PSSR] & (1<<PSSW)) {
+    white_w = (regs[PSCWH] << 8) + regs[PSCWL];// toto jsou hodnoty bile barvy (od ni se odecte aktualni)
+    white_r = (regs[PSCRH] << 8) + regs[PSCRL];
+    white_b = (regs[PSCBH] << 8) + regs[PSCBL];
   }
-  if (regs[PSSR] & (1<<PSCSRT)) {
-    //todo
+  if (regs[PSSR] & (1<<PSST)) {
+    white_thr = (regs[PSCWH] << 8) + regs[PSCWL]; // Prah, prahuje se pouze podle bile barvy
   }
   if (regs[PSSR] & (1<<PSCSB)) {
     //todo
