@@ -204,7 +204,7 @@ void input_event_init() {
 	for (int i = 0; i < EV_MAX; i++) {
 		if ((bit[i/64] >> (i%64)) & 1) {
 			printf("\tEvent 0x%02X ", i);
-			print_event_type(i);
+			input_event_print_event_type(i);
 			printf("\n");
 		}
 	}
@@ -216,7 +216,7 @@ void input_event_init() {
 	for (int i = 0; i < KEY_MAX; i++) {
 		if ((key[i/64] >> (i%64)) & 1) {
 			printf("\tKey 0x%04X ", i);
-			print_key_name(i);
+			input_event_print_key_name(i);
 			printf("\n");
 		}
 	}
@@ -226,7 +226,7 @@ void input_event_init() {
 struct input_event input_event_wait_for_key() {
 	struct input_event event;
 	event.type = EV_SYN;
-	while ((event.type != EV_KEY) || (event.value != 1)) {
+	while ((event.type != EV_KEY) || ((event.value != 0) && (event.value != 1))) {
 		read(input_device, &event, sizeof(struct input_event));
 	}
 	return event;
@@ -235,7 +235,7 @@ struct input_event input_event_wait_for_key() {
 int input_event_wait_for_key_press() {
 	struct input_event event;
 	event.type = EV_SYN;
-	while ((event.type != EV_KEY) || ((event.value != 0) && (event.value != 1))) {
+	while ((event.type != EV_KEY) || (event.value != 1)) {
 		read(input_device, &event, sizeof(struct input_event));
 	}
 	return event.code;
