@@ -10,8 +10,8 @@ all: ../../build_arm/start_cable
 	g++ -o $@ $(notdir $^)
 
 run: ../../build_arm/start_cable
-	cd ../../build_arm/
-	sudo ./start_cable
+	cd ../../build_arm/; \
+	  sudo ./start_cable || true
 
 clean:
 	rm -f *.o ../../build_arm/start_cable
