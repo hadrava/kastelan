@@ -107,5 +107,7 @@ read_fuse:
 #	avrdude -U lfuse:w:0xe4:m  tohle by se melo upravit (takhle to bylo pro bootloader na m128)
 
 
-
+flash: $(PRG).hex
+	avr-size $(PRG).hex
+	avrdude -p $(MCU_LOADERPART) -c usbasp -U flash:w:$< -v
 
