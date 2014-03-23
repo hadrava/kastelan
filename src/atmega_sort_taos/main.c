@@ -7,8 +7,8 @@
 
 #define PSSW   7
 #define PSST   6
-#define PSCSB  5
-#define PSCSBT 4
+#define PSGW   5
+#define PSGT   4
 #define PSFE   3
 #define PSGC   2
 #define PSSE   1
@@ -112,11 +112,19 @@ inline void update_status() {
     white_thr = (regs[PSCWH] << 8) + regs[PSCWL]; // Prah, prahuje se pouze podle bile barvy
     regs[PSSR] &= ~(1<<PSST);
   }
-  if (regs[PSSR] & (1<<PSCSB)) {
-    //TODO
+  if (regs[PSSR] & (1<<PSGW)) {
+    regs[PSCWL] = white_w & 0xFF; // toto jsou hodnoty bile barvy (od ni se odecte aktualni)
+    regs[PSCWH] = white_w >> 8;
+    regs[PSCRL] = white_r & 0xFF;
+    regs[PSCRH] = white_r >>8;
+    regs[PSCBL] = white_b & 0xFF;
+    regs[PSCBH] = white_b >>8;
+    regs[PSSR] &= ~(1<<PSGW);
   }
-  if (regs[PSSR] & (1<<PSCSBT)) {
-    //TODO
+  if (regs[PSSR] & (1<<PSGT)) {
+    regs[PSCWL] = white_thr & 0xFF; // Prah, prahuje se pouze podle bile barvy
+    regs[PSCWH] = white_thr >> 8;
+    regs[PSSR] &= ~(1<<PSGT);
   }
   if (regs[PSSR] & (1<<PSFE)) { //servo enable
     DDRB |= _BV(PB1) | _BV(PB2);

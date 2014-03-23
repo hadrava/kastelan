@@ -20,7 +20,7 @@ PSSR   0x00 Status Register
 Defaultní hodnota: 0x00
   každý bit má svůj vlastní význam
   +--------+--------+--------+--------+--------+--------+--------+--------+
-  |  PSSW  |  PSST  | PSCSB  | PSCSBT |  PSFE  |  PSGC  |  PSSE  |  PSLE  |
+  |  PSSW  |  PSST  |  PSGW  |  PSGT  |  PSFE  |  PSGC  |  PSSE  |  PSLE  |
   +--------+--------+--------+--------+--------+--------+--------+--------+
    7 (MSB)                                                         0 (LSB)
 
@@ -44,8 +44,11 @@ Defaultní hodnota: 0x00
   PSST (0x40) Set Threshold
     nastavení hranice mezi puky a bílou barvou dle obsahu PSCW
 
-  Ostatní bity zatím nemají svou funkci implementovánu
-    horní 4 jsou plánované pro nastavování hodnot a tolerance červené a modré (Color Set [Red | Blue] [Tolerance]) (bylo myšleno, že se někam uloží aktuální hodnota registrů měřících barvu)
+  PSSW (0x20) Get White
+    uložení referenční bílé barvy do registrů PSCR, PSCB a PSCW
+
+  PSST (0x10) Get Threshold
+    uložení hranice mezi puky a bílou barvou do PSCW
 
 následující hodnoty jsou konzistentní pouze pokud zrovna neprobíhá měření (bit PSGC v registru PSSR je nastaven na 0)
 PSCRL  0x01 Color Red Low
