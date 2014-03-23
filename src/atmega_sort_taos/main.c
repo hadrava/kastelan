@@ -188,20 +188,24 @@ int main(void) {
           TWCR |= (1<<TWINT) | (1<<TWEA);
       }
       else if ((TWSR & 0xF8) == 0xA8) { //slave transmitt
-        if (answr <= PSFPC)
-          TWDR = regs[answr];
-        if (answr == PSFP)
-          TWDR = (OCR1A - STD_SERVO_OFFSET) >> 1;
-        if (answr == PSF2P)
-          TWDR = (OCR1B - STD_SERVO_OFFSET) >> 1;
-        if (answr == PSFEP)
-          TWDR = (OCR1A - EXT_SERVO_OFFSET) >> 2;
-        if (answr == PSF2EP)
-          TWDR = (OCR1B - EXT_SERVO_OFFSET) >> 2;
+        while ((TWSR & 0xE8) == 0xA8) { // ACK has been returned (sla+r || data send)
+          if (answr <= PSFPC)
+            TWDR = regs[answr];
+          if (answr == PSFP)
+            TWDR = (OCR1A - STD_SERVO_OFFSET) >> 1;
+          if (answr == PSF2P)
+            TWDR = (OCR1B - STD_SERVO_OFFSET) >> 1;
+          if (answr == PSFEP)
+            TWDR = (OCR1A - EXT_SERVO_OFFSET) >> 2;
+          if (answr == PSF2EP)
+            TWDR = (OCR1B - EXT_SERVO_OFFSET) >> 2;
 
-        TWCR &= ~(1<<TWEA); //disable ACK
-        TWCR |= (1<<TWINT); //clear TWINT
-        TWI_WAIT();
+          //TWCR &= ~(1<<TWEA); //disable ACK
+          TWCR |= (1<<TWINT); //clear TWINT
+          answr++;
+
+          TWI_WAIT();
+        }
 
         if ((TWSR & 0xF0) == 0xC0) //0xC0 or 0xC8
           TWCR |= (1<<TWINT) | (1<<TWEA);
