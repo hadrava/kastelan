@@ -1,0 +1,9 @@
+ssh-keygen
+ssh-copy-id -i ~/.ssh/id_rsa.pub git@195.140.254.170
+ssh-copy-id -i ~/.ssh/id_rsa.pub git@kastelan
+
+git clone ssh://git@195.140.254.170:443/home/git/puckcollect ~/puckcollect
+cd ~/puckcollect
+git remote add kastelan ssh://git@kastelan/home/git/puckcollect
+
+git pull kastelan master
