@@ -10,10 +10,6 @@ SW TODO:
   virtuální bumpery NUTNÉ
   atmega_servo: zemnit vypnuta serva (nebo pullupy?)
     proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
-  online kalibrace taosu - sw pro raspberry
-    Atmega8 TAOS: Nechat jak je maximálně doladit sw rychlejší kalibrace a případně logování
-    nebo rovnou i detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
-    /atmega s červenou a modrou ledkou + tlačítko.
 
 SW detaily:
   vypnout main zasunutím startovacího kabelu

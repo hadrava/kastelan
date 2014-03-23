@@ -205,7 +205,7 @@ void i2c_taos_get_color() {
   i2c_write(fTAOS, buf, 2);
 }
 
-void i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w) {
+char i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w) {
   u08 buf[8];
   u16 *buff = (u16*) buf;
 
@@ -218,7 +218,25 @@ void i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w) {
   *b = buff[2];
   *g = buff[3];
 
-  printf("TAOS (RGBW): %X %X %X %X\n", *r, *g, *b, *w);
+  printf("TAOS (RGBW): %X %X %X %X", *r, *g, *b, *w);
+  // Následující kód je téměř duplicitní s atmega_sort_taos/main.c
+  if (*w < taos_white_thr) { // detekovali jsme puk
+    int dw = taos_white_w - *w;
+    int dr = taos_white_r - *r;
+    int db = taos_white_b - *b;
+    if ((dw/8) > (db - dr)) {
+      printf("\tmodry puk\n");
+      return 'B';
+    }
+    else {
+      printf("\tcerveny puk\n");
+      return 'R';
+    }
+  }
+  else {
+    printf("\tzadny puk\n");
+    return 'N';
+  }
 }
 
 bool i2c_start_cable_present() {
