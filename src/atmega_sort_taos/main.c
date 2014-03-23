@@ -86,6 +86,9 @@ ISR(TIMER1_CAPT_vect) { //presne 50Hz
       else
         OCR1A = STD_SERVO_OFFSET + (regs[PSFPC]<<1);// bila
     }
+    else {
+      regs[PSSR] &= ~(1<<PSGC);
+    }
   }
   else {
     TIMSK &= ~((1<<TICIE1) | (1<<TOIE0)); //disable counter0, timer1 irq
@@ -103,9 +106,11 @@ inline void update_status() {
     white_w = (regs[PSCWH] << 8) + regs[PSCWL];// toto jsou hodnoty bile barvy (od ni se odecte aktualni)
     white_r = (regs[PSCRH] << 8) + regs[PSCRL];
     white_b = (regs[PSCBH] << 8) + regs[PSCBL];
+    regs[PSSR] &= ~(1<<PSSW);
   }
   if (regs[PSSR] & (1<<PSST)) {
     white_thr = (regs[PSCWH] << 8) + regs[PSCWL]; // Prah, prahuje se pouze podle bile barvy
+    regs[PSSR] &= ~(1<<PSST);
   }
   if (regs[PSSR] & (1<<PSCSB)) {
     //todo
