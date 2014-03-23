@@ -17,6 +17,7 @@ SW TODO:
 
 SW bugy:
   atmega na enkodery dělá clock stretching, pak čteme špatná data
+    je to kvůli špatnému pořadí jednotlivých větví ve switchi v interruptu, potřeba přeházet (pozor na optimalizace)
 
 
 SW detaily:
