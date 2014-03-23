@@ -130,22 +130,22 @@ int i2c_taos_config() {
   i2c_taos_set_servo(TAOS_FLIPPER, taos_flipper_center);
 
   u08 buf[2];
-  buf[0] = 0x00, buf[1] = TAOS_PSSR_DEF;
+  buf[0] = 0x00, buf[1] = PSSR_DEF;
   i2c_write(fTAOS, buf, 2);
 
   if (((ourside == 'L') && (ourcolor == 'R')) || ((ourside != 'L') && (ourcolor != 'R'))) {
-    buf[0] = TAOS_PSFPR, buf[1] = taos_flipper_left;
+    buf[0] = PSFPR, buf[1] = taos_flipper_left;
     i2c_write(fTAOS, buf, 2);
-    buf[0] = TAOS_PSFPB, buf[1] = taos_flipper_right;
+    buf[0] = PSFPB, buf[1] = taos_flipper_right;
     i2c_write(fTAOS, buf, 2);
   }
   else {
-    buf[0] = TAOS_PSFPB, buf[1] = taos_flipper_left;
+    buf[0] = PSFPB, buf[1] = taos_flipper_left;
     i2c_write(fTAOS, buf, 2);
-    buf[0] = TAOS_PSFPR, buf[1] = taos_flipper_right;
+    buf[0] = PSFPR, buf[1] = taos_flipper_right;
     i2c_write(fTAOS, buf, 2);
   }
-  buf[0] = TAOS_PSFPC, buf[1] = taos_flipper_center;
+  buf[0] = PSFPC, buf[1] = taos_flipper_center;
   i2c_write(fTAOS, buf, 2);
   return 0;
 }
@@ -180,21 +180,21 @@ int get_gpio_aports(u08* value) {
 
 void i2c_taos_get_color() {
   u08 buf[2];
-  buf[0] = TAOS_PSSR, buf[1] = TAOS_PSSR_DEF | TAOS_PSSR_GC;
+  buf[0] = PSSR, buf[1] = PSSR_DEF | PSSR_GC;
   i2c_write(fTAOS, buf, 2);
 }
 
 void i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w) {
   u08 buf[1];
 
-  buf[0] = TAOS_PSCRL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r = buf[0];
-  buf[0] = TAOS_PSCRH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r |= buf[0] << 8;
-  buf[0] = TAOS_PSCWL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w = buf[0];
-  buf[0] = TAOS_PSCWH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w |= buf[0] << 8;
-  buf[0] = TAOS_PSCBL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b = buf[0];
-  buf[0] = TAOS_PSCBH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b |= buf[0] << 8;
-  buf[0] = TAOS_PSCGL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g = buf[0];
-  buf[0] = TAOS_PSCGH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g |= buf[0] << 8;
+  buf[0] = PSCRL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r = buf[0];
+  buf[0] = PSCRH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r |= buf[0] << 8;
+  buf[0] = PSCWL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w = buf[0];
+  buf[0] = PSCWH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w |= buf[0] << 8;
+  buf[0] = PSCBL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b = buf[0];
+  buf[0] = PSCBH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b |= buf[0] << 8;
+  buf[0] = PSCGL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g = buf[0];
+  buf[0] = PSCGH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g |= buf[0] << 8;
   printf("TAOS (RGBW): %X %X %X %X\n", *r, *g, *b, *w);
 }
 
@@ -217,12 +217,12 @@ void i2c_get_bumpers(u08* value) {
 
 void i2c_taos_sort_enable() {
   u08 buf[2];
-  buf[0] = TAOS_PSSR, buf[1] = TAOS_PSSR_DEF | TAOS_PSSR_SE;
+  buf[0] = PSSR, buf[1] = PSSR_DEF | PSSR_SE;
   i2c_write(fTAOS, buf, 2);
 }
 void i2c_taos_sort_disable() {
   u08 buf[2];
-  buf[0] = TAOS_PSSR, buf[1] = TAOS_PSSR_DEF;
+  buf[0] = PSSR, buf[1] = PSSR_DEF;
   i2c_write(fTAOS, buf, 2);
   i2c_taos_set_servo(TAOS_FLIPPER, taos_flipper_center);
 }

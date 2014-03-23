@@ -9,22 +9,11 @@
 #define ADDRESS_SERVO   0x73
 #define ADDRESS_ENCODER 0x30
 
-#define TAOS_PSSR       0x00
-#define TAOS_PSSR_GC    (1<<2)
-#define TAOS_PSSR_SE    (1<<1)
-#define TAOS_PSSR_DEF   0x09
-#define TAOS_FLIPPER    0x0D
-#define TAOS_PSCRL  0x01
-#define TAOS_PSCRH  0x02
-#define TAOS_PSCWL  0x03
-#define TAOS_PSCWH  0x04
-#define TAOS_PSCBL  0x05
-#define TAOS_PSCBH  0x06
-#define TAOS_PSCGL  0x07
-#define TAOS_PSCGH  0x08
-#define TAOS_PSFPR  0x0A
-#define TAOS_PSFPB  0x0B
-#define TAOS_PSFPC  0x0C
+#include "taos.h"
+#define PSSR_GC    (1<<PSGC)
+#define PSSR_SE    (1<<PSSE)
+#define PSSR_DEF   ((1<<PSFE) | (1<<PSLE))
+#define TAOS_FLIPPER    PSFP
 
 
 #define SERVO_AS_SR_DEF 0x08
