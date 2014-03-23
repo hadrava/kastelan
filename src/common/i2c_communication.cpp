@@ -185,16 +185,18 @@ void i2c_taos_get_color() {
 }
 
 void i2c_taos_fetch_color(u16* r, u16* g, u16* b, u16* w) {
-  u08 buf[1];
+  u08 buf[8];
+  u16 *buff = (u16*) buf;
 
-  buf[0] = PSCRL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r = buf[0];
-  buf[0] = PSCRH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *r |= buf[0] << 8;
-  buf[0] = PSCWL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w = buf[0];
-  buf[0] = PSCWH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *w |= buf[0] << 8;
-  buf[0] = PSCBL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b = buf[0];
-  buf[0] = PSCBH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *b |= buf[0] << 8;
-  buf[0] = PSCGL; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g = buf[0];
-  buf[0] = PSCGH; i2c_write(fTAOS, buf, 1); i2c_read(fTAOS, buf, 1); *g |= buf[0] << 8;
+  buf[0] = PSCRL;
+  i2c_write(fTAOS, buf, 1);
+  i2c_read(fTAOS, buf, 8);
+
+  *r = buff[0];
+  *w = buff[1];
+  *b = buff[2];
+  *g = buff[3];
+
   printf("TAOS (RGBW): %X %X %X %X\n", *r, *g, *b, *w);
 }
 
