@@ -7,3 +7,5 @@ cd ~/puckcollect
 git remote add kastelan ssh://git@kastelan/home/git/puckcollect
 
 git pull kastelan master
+
+git config --global color.ui "auto"
