@@ -252,29 +252,24 @@ u08 _crc_ibutton_update(u08 crc, u08 data) {
         return crc;
 }
 
-
-unsigned int i2c_encoder_get() {
+void i2c_encoder_get(u08* buf) {
   u08 notok = 1;
-  u08 buf[5];
   while (notok) {
     notok = 0;
-    buf[0] = 10;
+    buf[0] = 0x80; // 32-bit without shift
 
-    if (i2c_write(fENCODER, buf, 1) < 0 || i2c_read(fENCODER, buf, 5) < 0) {
-      return 0;
+    if (i2c_write(fENCODER, buf, 1) < 0 || i2c_read(fENCODER, buf, 9) < 0) {
+      printf("ENCODER: READ/WRITE: ERROR\n");
+      notok=1;
     }
 
     u08 crc = 0;
-    crc = _crc_ibutton_update(crc, buf[0]);
-    crc = _crc_ibutton_update(crc, buf[1]);
-    crc = _crc_ibutton_update(crc, buf[2]);
-    crc = _crc_ibutton_update(crc, buf[3]);
-    if (crc != buf[4]) {
+    for (int i=0; i<8; i++)
+      crc = _crc_ibutton_update(crc, buf[i]);
+
+    if (crc != buf[8]) {
       printf("ENCODER: CRC: ERROR\n");
       notok = 1;
     }
   }
-
-  return *((unsigned int *)buf);
 }
-

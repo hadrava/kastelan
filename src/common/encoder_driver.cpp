@@ -22,22 +22,10 @@ pthread_mutex_t enc_lock;
 inline void enc_read() {
   pthread_mutex_lock(&enc_lock);
 
-  int enc_l_new, enc_r_new;
-  unsigned int both = i2c_encoder_get();
-  enc_l_new = (enc_l_last & 0xFFFF0000) | (both & 0xFFFF);
-  enc_r_new = (enc_r_last & 0xFFFF0000) | (both >> 16);
-  printf("DEBUG: both                                                                                                                 %x\n", both);
-  printf("DEBUG: befor hop %x\n", enc_l_new);
-  if (enc_l_new - enc_l_last > 0x8000)
-    enc_l_new -= 0x10000;
-  if (enc_l_last - enc_l_new > 0x8000)
-    enc_l_new += 0x10000;
-  printf("DEBUG: after hop %x\n", enc_l_new);
-
-  if (enc_r_new - enc_r_last > 0x8000)
-    enc_r_new -= 0x10000;
-  if (enc_r_last - enc_r_new > 0x8000)
-    enc_r_new += 0x10000;
+  u08 buf[9];
+  i2c_encoder_get(buf);
+  int enc_l_new = *((unsigned int *)buf);
+  int enc_r_new = *((unsigned int *)(buf+4));
 
   int dl = enc_l_new - enc_l_last;
   int dr = enc_r_new - enc_r_last;
@@ -71,9 +59,11 @@ inline void enc_reset() {
   fflush(enc_l_h);
   fflush(enc_r_h);
   */
-  unsigned int both = i2c_encoder_get();
-  enc_l_last = both & 0xFFFF;
-  enc_r_last = both >> 16;
+
+  u08 buf[9];
+  i2c_encoder_get(buf);
+  enc_l_last = *((unsigned int *)buf);
+  enc_r_last = *((unsigned int *)(buf+4));
 
   pos_x = 0;
   pos_y = 0;

@@ -59,6 +59,6 @@ int i2c_close_encoder();
 
 int i2c_init_encoder();
 int i2c_close_encoder();
-unsigned int i2c_encoder_get();
+void i2c_encoder_get(u08* buf);
 
 #endif
