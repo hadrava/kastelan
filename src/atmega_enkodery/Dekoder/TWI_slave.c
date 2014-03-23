@@ -170,17 +170,6 @@ ISR(TWI_vect)
   
   switch (TWSR)
   {
-    case TWI_STX_ADR_ACK:            // Own SLA+R has been received; ACK has been returned
-//    case TWI_STX_ADR_ACK_M_ARB_LOST: // Arbitration lost in SLA+R/W as Master; own SLA+R has been received; ACK has been returned
-      TWI_bufPtr   = 0;                                 // Set buffer pointer to first data location
-    case TWI_STX_DATA_ACK:           // Data byte in TWDR has been transmitted; ACK has been received
-      TWDR = TWI_buf[TWI_bufPtr++];
-      TWCR = (1<<TWEN)|                                 // TWI Interface enabled
-             (1<<TWIE)|(1<<TWINT)|                      // Enable TWI Interupt and clear the flag to send byte
-             (1<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|           // 
-             (0<<TWWC);                                 //
-      TWI_busy = 1;
-      break;
     case TWI_STX_DATA_NACK:          // Data byte in TWDR has been transmitted; NACK has been received. 
                                      // I.e. this could be the end of the transmission.
       if (TWI_bufPtr == TWI_msgSize) // Have we transceived all expected data?
@@ -199,9 +188,9 @@ ISR(TWI_vect)
       
       TWI_busy = 0;   // Transmit is finished, we are not busy anymore
       break;     
-    case TWI_SRX_GEN_ACK:            // General call address has been received; ACK has been returned
+/*    case TWI_SRX_GEN_ACK:            // General call address has been received; ACK has been returned
 //    case TWI_SRX_GEN_ACK_M_ARB_LOST: // Arbitration lost in SLA+R/W as Master; General call address has been received; ACK has been returned
-      TWI_statusReg.genAddressCall = TRUE;
+      TWI_statusReg.genAddressCall = TRUE;*/
     case TWI_SRX_ADR_ACK:            // Own SLA+W has been received ACK has been returned
 //    case TWI_SRX_ADR_ACK_M_ARB_LOST: // Arbitration lost in SLA+R/W as Master; own SLA+W has been received; ACK has been returned    
                                                         // Dont need to clear TWI_S_statusRegister.generalAddressCall due to that it is the default state.
@@ -217,7 +206,7 @@ ISR(TWI_vect)
       
       break;
     case TWI_SRX_ADR_DATA_ACK:       // Previously addressed with own SLA+W; data has been received; ACK has been returned
-    case TWI_SRX_GEN_DATA_ACK:       // Previously addressed with general call; data has been received; ACK has been returned
+/*    case TWI_SRX_GEN_DATA_ACK:       // Previously addressed with general call; data has been received; ACK has been returned*/
       TWI_buf[TWI_bufPtr++]     = TWDR;
       TWI_statusReg.lastTransOK = TRUE;                 // Set flag transmission successfull.       
                                                         // Reset the TWI Interupt to wait for a new event.
@@ -238,12 +227,23 @@ ISR(TWI_vect)
       
       break;           
     case TWI_SRX_ADR_DATA_NACK:      // Previously addressed with own SLA+W; data has been received; NOT ACK has been returned
-    case TWI_SRX_GEN_DATA_NACK:      // Previously addressed with general call; data has been received; NOT ACK has been returned
+/*    case TWI_SRX_GEN_DATA_NACK:      // Previously addressed with general call; data has been received; NOT ACK has been returned*/
     case TWI_STX_DATA_ACK_LAST_BYTE: // Last data byte in TWDR has been transmitted (TWEA = “0”); ACK has been received
 //    case TWI_NO_STATE              // No relevant state information available; TWINT = “0”
     case TWI_BUS_ERROR:         // Bus error due to an illegal START or STOP condition
       TWI_state = TWSR;                 //Store TWI State as errormessage, operation also clears noErrors bit
       TWCR =   (1<<TWSTO)|(1<<TWINT);   //Recover from TWI_BUS_ERROR, this will release the SDA and SCL pins thus enabling other devices to use the bus
+      break;
+    case TWI_STX_ADR_ACK:            // Own SLA+R has been received; ACK has been returned
+//    case TWI_STX_ADR_ACK_M_ARB_LOST: // Arbitration lost in SLA+R/W as Master; own SLA+R has been received; ACK has been returned
+      TWI_bufPtr   = 0;                                 // Set buffer pointer to first data location
+    case TWI_STX_DATA_ACK:           // Data byte in TWDR has been transmitted; ACK has been received
+      TWDR = TWI_buf[TWI_bufPtr++];
+      TWCR = (1<<TWEN)|                                 // TWI Interface enabled
+             (1<<TWIE)|(1<<TWINT)|                      // Enable TWI Interupt and clear the flag to send byte
+             (1<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|           // 
+             (0<<TWWC);                                 //
+      TWI_busy = 1;
       break;
     default:     
       TWI_state = TWSR;                                 // Store TWI State as errormessage, operation also clears the Success bit.      
