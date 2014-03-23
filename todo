@@ -7,18 +7,13 @@ SW TODO:
     timestamp
   doobrátit stavový automat tak, jak má být
   možná: hermitovské křivky
-  virtuální bumpery
+  virtuální bumpery NUTNÉ
   atmega_servo: zemnit vypnuta serva (nebo pullupy?)
     proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
-  online kalibrace taosu
+  online kalibrace taosu téměř nutné
     Atmega8 TAOS: Nechat jak je maximálně doladit sw rychlejší kalibrace a případně logování
     nebo rovnou i detekovat naši barvu (na které stojíme) ať vozíme domu naše puky
     /atmega s červenou a modrou ledkou + tlačítko.
-
-SW bugy:
-  atmega na enkodery dělá clock stretching, pak čteme špatná data
-    je to kvůli špatnému pořadí jednotlivých větví ve switchi v interruptu, potřeba přeházet (pozor na optimalizace)
-
 
 SW detaily:
   vypnout main zasunutím startovacího kabelu
@@ -26,12 +21,17 @@ SW detaily:
     v terminálu bude skript na vypnutí cyklu a zabití mainu
       (vypnutí cyklu by mohlo fungovat nějak jako smazání souboru v tmpfs)
 
+HW bugy:
+  opěrné kuličky jsou docela zacpané prachem. Jsme schopni s tím něco udělat?
+  táhla pro záklopky se ohýbají -> vyrobit náhradní (radši dvě sady)
+
 HW TODO:
   vyrobit desku pro raspberry
   přidat přední záklopku pro couvání.
     kus plechu, který bude jezdit v item profilech
     stačí ho zvedat.
     dolu padne vlastní vahou -> neohnem si páčku pokud tam bude puk
+    nebo přidat foukání
   pravy enkoder ma u motoru spatny kabel, obcas to nemeri (projevuje se to tak, ze robot kousek popojede a pak se kolem leveho kola zacne tocit na miste)
   stavba noveho hriste: kečup z druhé strany?
 
