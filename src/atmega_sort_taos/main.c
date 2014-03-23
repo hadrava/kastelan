@@ -113,10 +113,10 @@ inline void update_status() {
     regs[PSSR] &= ~(1<<PSST);
   }
   if (regs[PSSR] & (1<<PSCSB)) {
-    //todo
+    //TODO
   }
   if (regs[PSSR] & (1<<PSCSBT)) {
-    //todo
+    //TODO
   }
   if (regs[PSSR] & (1<<PSFE)) { //servo enable
     DDRB |= _BV(PB1) | _BV(PB2);
