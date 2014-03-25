@@ -10,6 +10,7 @@ SW TODO:
   virtuální bumpery NUTNÉ
   atmega_servo: zemnit vypnuta serva (nebo pullupy?)
     proc se zaklopky oteviraji pri otaceni levym kolem? staci aby byla napajena serva, zrejme se chyta na draty ruseni
+  kontrola, že se nahrálo správné nastavení do TAOSU
 
 SW detaily:
   vypnout main zasunutím startovacího kabelu
@@ -21,6 +22,7 @@ HW bugy:
   opěrné kuličky jsou docela zacpané prachem. Jsme schopni s tím něco udělat?
   táhla pro záklopky se ohýbají -> vyrobit náhradní (radši dvě sady)
   nutno opravit tlumiče bumperů
+  dořešit zasekávání puků před flipperem HOŘÍ!!!
 
 HW TODO:
   vyrobit desku pro raspberry
