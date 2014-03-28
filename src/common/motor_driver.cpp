@@ -43,11 +43,11 @@ inline int limit_speed(int s) {
   return s;
 }
 
-int norm_angle(int angle) {
-  if (angle < -180)
-    return norm_angle(angle + 360);
-  if (angle > 180)
-    return norm_angle(angle - 360);
+inline int norm_angle(int angle) {
+  while (angle < -180)
+    angle += 360;
+  while (angle > 180)
+    angle -= 360;
   return angle;
 }
 
