@@ -277,7 +277,6 @@ void virtual_bumpers_set_speed(int speed, int ang_speed) {
   avg_ang_speed[avg_ang_speed_offset] = abs_ang_speed;
   if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
     avg_ang_speed_offset = 0;
-  avg_ang_speeds = abs_ang_speed;
 }
 
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
@@ -298,7 +297,6 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   avg_ang_enc[avg_ang_enc_offset] = abs_ang;
   if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
     avg_ang_enc_offset = 0;
-  avg_ang_encs = abs_ang;
 }
 
 void get_bumpers_virtual(u08* value) {
