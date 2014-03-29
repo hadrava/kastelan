@@ -251,6 +251,10 @@ POS_TYPE avg_ang_enc[VIRT_AVG_CNT];
 POS_TYPE avg_ang_encs;
 int avg_ang_enc_offset;
 
+u08 virtual_state;
+int virtual_last_speed;
+int virtual_last_ang_speed;
+
 void virtual_bumpers_init() {
   for(int i = 0; i< VIRT_AVG_CNT; i++) {
     avg_speed[i] = 0;
@@ -268,9 +272,13 @@ void virtual_bumpers_init() {
   avg_enc_offset = 0;
   avg_ang_encs = 0;
   avg_ang_enc_offset = 0;
+  virtual_state = 0;
 }
 
 void virtual_bumpers_set_speed(int speed, int ang_speed) {
+  virtual_last_speed = speed;
+  virtual_last_ang_speed = ang_speed;
+
   POS_TYPE sqr_speed = speed*speed;
   if (++avg_speed_offset >= VIRT_AVG_CNT)
     avg_speed_offset = 0;
@@ -306,16 +314,41 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   avg_ang_enc[avg_ang_enc_offset] = abs_ang;
 }
 
+
 void get_bumpers_virtual(u08* value) {
   *value = 0;
   printf("virtual: avg_encs=%lf; avg_speeds=%lf;", avg_encs, avg_speeds);
   printf(" avg_ang_encs=%lf; avg_ang_speeds=%lf;\n", avg_ang_encs, avg_ang_speeds);
   printf("virt: encs=%lf; speeds=%lf;", avg_enc[avg_enc_offset], avg_speed[avg_speed_offset]);
   printf(" ang_encs=%lf; ang_speeds=%lf;\n", avg_ang_enc[avg_ang_enc_offset], avg_ang_speed[avg_ang_speed_offset]);
-  if ((avg_encs < 2.5) && (avg_speeds > 12500))
-    printf("VIRTUAL!!\n");
-  if ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250))
-    printf("VIRTUAL!!\n");
+  if (((avg_encs < 2.5) && (avg_speeds > 12500)) || ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250))) {
+    if (virtual_state)
+      *value = virtual_state;
+    else {
+      if ((avg_encs < 2.5) && (avg_speeds > 12500)) {
+        if (virtual_last_ang_speed > 0) {
+          if (virtual_last_speed > 0)
+            *value = BUMPER_LEFT_FRONT;
+          else
+            *value = BUMPER_RIGHT_FRONT;
+        }
+        else {
+          if (virtual_last_speed > 0)
+            *value = BUMPER_LEFT_REAR;
+          else
+            *value = BUMPER_RIGHT_REAR;
+        }
+      }
+
+      if ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250)) {
+        if(virtual_last_ang_speed > 0)
+          *value = BUMPER_RIGHT_SIDE;
+        else
+          *value = BUMPER_LEFT_SIDE;
+      }
+    }
+  }
+  virtual_state = *value;
 }
 
 void get_bumpers(u08* value) {

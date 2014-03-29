@@ -6,6 +6,13 @@
 #include "i2c_communication.h"
 #include "encoder_driver.h"
 
+#define BUMPER_RIGHT_FRONT  1
+#define BUMPER_RIGHT_SIDE   2
+#define BUMPER_RIGHT_REAR   4
+#define BUMPER_LEFT_FRONT  32
+#define BUMPER_LEFT_SIDE   16
+#define BUMPER_LEFT_REAR    8
+
 #define VERBOSE
 
 extern FILE *motor_h;
