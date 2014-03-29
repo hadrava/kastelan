@@ -271,15 +271,13 @@ void virtual_bumpers_set_speed(int speed, int ang_speed) {
   if (++avg_speed_offset >= VIRT_AVG_CNT)
     avg_speed_offset = 0;
 
-  POS_TYPE sqr_ang_speed = ang_speed*ang_speed;
-  /*
+  POS_TYPE abs_ang_speed = fabs(ang_speed);
   avg_ang_speeds -= avg_ang_speed[avg_ang_speed_offset];
-  avg_ang_speeds += sqr_ang_speed;
-  avg_ang_speed[avg_ang_speed_offset] = sqr_ang_speed;
+  avg_ang_speeds += abs_ang_speed;
+  avg_ang_speed[avg_ang_speed_offset] = abs_ang_speed;
   if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
     avg_ang_speed_offset = 0;
-*/
-  avg_ang_speeds = sqr_ang_speed;
+  avg_ang_speeds = abs_ang_speed;
 }
 
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
@@ -294,15 +292,13 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   if (++avg_enc_offset >= VIRT_AVG_CNT)
     avg_enc_offset = 0;
 
-  POS_TYPE sqr_ang = diff_a*diff_a;
-  /*
+  POS_TYPE abs_ang = fabs(diff_a);
   avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
-  avg_ang_encs += sqr_ang;
-  avg_ang_enc[avg_ang_enc_offset] = sqr_ang;
+  avg_ang_encs += abs_ang;
+  avg_ang_enc[avg_ang_enc_offset] = abs_ang;
   if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
     avg_ang_enc_offset = 0;
-*/
-  avg_ang_encs = sqr_ang;
+  avg_ang_encs = abs_ang;
 }
 
 void get_bumpers_virtual(u08* value) {
