@@ -272,11 +272,14 @@ void virtual_bumpers_set_speed(int speed, int ang_speed) {
     avg_speed_offset = 0;
 
   POS_TYPE sqr_ang_speed = ang_speed*ang_speed;
+  /*
   avg_ang_speeds -= avg_ang_speed[avg_ang_speed_offset];
   avg_ang_speeds += sqr_ang_speed;
   avg_ang_speed[avg_ang_speed_offset] = sqr_ang_speed;
   if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
     avg_ang_speed_offset = 0;
+*/
+  avg_ang_speeds = sqr_ang_speed;
 }
 
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
@@ -292,11 +295,14 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
     avg_enc_offset = 0;
 
   POS_TYPE sqr_ang = diff_a*diff_a;
+  /*
   avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
   avg_ang_encs += sqr_ang;
   avg_ang_enc[avg_ang_enc_offset] = sqr_ang;
   if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
     avg_ang_enc_offset = 0;
+*/
+  avg_ang_encs = sqr_ang;
 }
 
 void get_bumpers_virtual(u08* value) {
