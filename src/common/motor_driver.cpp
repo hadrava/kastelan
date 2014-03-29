@@ -10,10 +10,6 @@
 #include "variable_loader.h"
 #include "i2c_communication.h"
 
-#ifndef TEST_JIZDA
-#include "check.h"
-#endif
-
 #define F_MOTOR          "/dev/ttyAMA0"
 #define MOTOR_LEFT       0x80
 #define MOTOR_RIGHT      0x00

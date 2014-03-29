@@ -1,4 +1,4 @@
-OBJ = all_test.o led_driver.o input_event_driver.o i2c_communication.o variable_loader.o  check.o encoder_driver.o our_time.o motor_driver.o
+OBJ = all_test.o led_driver.o input_event_driver.o i2c_communication.o variable_loader.o encoder_driver.o our_time.o motor_driver.o
 
 all: ../../build_arm/all_test
 
