@@ -234,7 +234,7 @@ void motor_stop() {
 
 /////////////////////////////////////////////////
 //
-#define VIRT_AVG_CNT 200
+#define VIRT_AVG_CNT 100
 POS_TYPE avg_speed[VIRT_AVG_CNT];
 POS_TYPE avg_speeds;
 int avg_speed_offset;
@@ -312,9 +312,9 @@ void get_bumpers_virtual(u08* value) {
   printf(" avg_ang_encs=%lf; avg_ang_speeds=%lf;\n", avg_ang_encs, avg_ang_speeds);
   printf("virt: encs=%lf; speeds=%lf;", avg_enc[avg_enc_offset], avg_speed[avg_speed_offset]);
   printf(" ang_encs=%lf; ang_speeds=%lf;\n", avg_ang_enc[avg_ang_enc_offset], avg_ang_speed[avg_ang_speed_offset]);
-  if ((avg_encs < 5) && (avg_speeds > 25000))
+  if ((avg_encs < 2.5) && (avg_speeds > 12500))
     printf("VIRTUAL!!\n");
-  if ((avg_ang_encs < 1) && (avg_ang_speeds > 500))
+  if ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250))
     printf("VIRTUAL!!\n");
 }
 
