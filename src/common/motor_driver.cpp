@@ -54,7 +54,6 @@ inline int norm_angle(int angle) {
 
 void motor_go(int speed, int ang_speed) {
   virtual_bumpers_set_speed(speed, ang_speed);
-  printf("DEBUGGGGG: %i\n", ang_speed);
   int dt = pos_now.time - pos_last.time;
   if (dt <= 0)
     return;
