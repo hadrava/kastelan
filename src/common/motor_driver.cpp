@@ -314,7 +314,7 @@ void get_bumpers_virtual(u08* value) {
   printf(" ang_encs=%lf; ang_speeds=%lf;\n", avg_ang_enc[avg_ang_enc_offset], avg_ang_speed[avg_ang_speed_offset]);
   if ((avg_encs < 5) && (avg_speeds > 25000))
     printf("VIRTUAL!!\n");
-  if ((avg_ang_encs < 1) && (avg_speeds > 500))
+  if ((avg_ang_encs < 1) && (avg_ang_speeds > 500))
     printf("VIRTUAL!!\n");
 }
 
