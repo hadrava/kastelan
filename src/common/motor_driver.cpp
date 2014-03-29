@@ -6,6 +6,7 @@
 #include "motor_driver.h"
 #include "encoder_driver.h"
 #include "variable_loader.h"
+#include "i2c_communication.h"
 
 #ifndef TEST_JIZDA
 #include "check.h"
@@ -52,6 +53,7 @@ inline int norm_angle(int angle) {
 }
 
 void motor_go(int speed, int ang_speed) {
+  virtual_bumpers_set_speed(speed, ang_speed);
   int dt = pos_now.time - pos_last.time;
   if (dt <= 0)
     return;
@@ -105,6 +107,7 @@ void *motor_loop(void *arg) {
 int go_to_pos() {//go to command_want_x, command_want_y
   pos_last = pos_now;
   enc_get(&pos_now);
+  virtual_bumpers_set_enc(&pos_last, &pos_now);
   POS_TYPE diff_x = command_want_x - pos_now.pos_x;
   POS_TYPE diff_y = command_want_y - pos_now.pos_y;
   POS_TYPE ang_to_pos = atan(diff_y / diff_x) * 180.0 / PI;
@@ -127,6 +130,7 @@ int go_to_pos() {//go to command_want_x, command_want_y
 int go_to_pos_rev() {//go to command_want_x, command_want_y
   pos_last = pos_now;
   enc_get(&pos_now);
+  virtual_bumpers_set_enc(&pos_last, &pos_now);
   POS_TYPE diff_x = command_want_x - pos_now.pos_x;
   POS_TYPE diff_y = command_want_y - pos_now.pos_y;
   POS_TYPE ang_to_pos = atan(diff_y / diff_x) * 180.0 / PI;
@@ -216,4 +220,49 @@ void motor_stop() {
   fflush(motor_h);
   fputc(0x00, motor_h);
   fflush(motor_h);
+}
+
+
+/////////////////////////////////////////////////
+//
+#define VIRT_AVG_CNT 10
+POS_TYPE avg_speed[VIRT_AVG_CNT];
+POS_TYPE avg_speeds = 0;
+int avg_speed_offset = 0;
+
+POS_TYPE avg_enc[VIRT_AVG_CNT];
+POS_TYPE avg_encs = 0;
+int avg_enc_offset = 0;
+
+void virtual_bumpers_set_speed(int speed, int ang_speed) {
+  POS_TYPE sqr_speed = speed*speed + ang_speed*ang_speed;
+
+  avg_speeds -= avg_speed[avg_speed_offset];
+  avg_speeds += sqr_speed;
+  avg_speed[avg_speed_offset] = sqr_speed;
+  if (++avg_speed_offset >= VIRT_AVG_CNT)
+    avg_speed_offset = 0;
+}
+
+void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
+  POS_TYPE diff_x = act->pos_x - last->pos_x;
+  POS_TYPE diff_y = act->pos_y - last->pos_y;
+  POS_TYPE sqr_dist = diff_x*diff_x + diff_y*diff_y;
+  avg_encs -= avg_enc[avg_enc_offset];
+  avg_encs += sqr_dist;
+  avg_enc[avg_enc_offset] = sqr_dist;
+  if (++avg_enc_offset >= VIRT_AVG_CNT)
+    avg_enc_offset = 0;
+}
+
+void get_bumpers_virtual(u08* value) {
+  *value = 0;
+  printf("virtual: avg_encs=%i; avg_speeds=%i;\n", avg_encs, avg_speeds);
+}
+
+void get_bumpers(u08* value) {
+  u08 bump;
+  i2c_get_bumpers(&bump);
+  get_bumpers_virtual(value);
+  *value |= bump;
 }

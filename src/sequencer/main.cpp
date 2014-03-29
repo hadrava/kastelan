@@ -51,7 +51,7 @@ int main_poll() {
   while (main_running) {
 
     u08 bumpers;
-    i2c_get_bumpers(&bumpers);
+    get_bumpers(&bumpers);
     printf("bumpers: %X\n", bumpers);
 
     // Skoncila hra, zastavim

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "variable_loader.h"
 #include "i2c_communication.h"
+#include "encoder_driver.h"
 
 #define VERBOSE
 
@@ -19,5 +20,11 @@ int go_to_pos();
 int go_to_pos_rev();
 void motor_command(POS_TYPE want_x, POS_TYPE want_y, bool reverse, bool stop, int distance_no_angle);
 void motor_get_command(POS_TYPE *want_x, POS_TYPE *want_y, bool *reverse, bool *stop, int *distance_no_angle);
+
+/////////////////////////////
+void virtual_bumpers_set_speed(int speed, int ang_speed);
+void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act);
+void get_bumpers_virtual(u08* value);
+void get_bumpers(u08* value);
 
 #endif

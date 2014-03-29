@@ -18,7 +18,7 @@ pthread_t bumpers_loop_tid;
 void *bumpers_loop(void *arg) {
   while (1) {
     u08 bumpers;
-    i2c_get_bumpers(&bumpers);
+    get_bumpers(&bumpers);
     printf("bumpers: %X\n", bumpers);
     if (i2c_start_cable_present())
       printf("cable: present\n");
