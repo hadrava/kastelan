@@ -272,19 +272,18 @@ void virtual_bumpers_init() {
 
 void virtual_bumpers_set_speed(int speed, int ang_speed) {
   POS_TYPE sqr_speed = speed*speed;
-
+  if (++avg_speed_offset >= VIRT_AVG_CNT)
+    avg_speed_offset = 0;
   avg_speeds -= avg_speed[avg_speed_offset];
   avg_speeds += sqr_speed;
   avg_speed[avg_speed_offset] = sqr_speed;
-  if (++avg_speed_offset >= VIRT_AVG_CNT)
-    avg_speed_offset = 0;
 
   POS_TYPE abs_ang_speed = fabs(ang_speed);
+  if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
+    avg_ang_speed_offset = 0;
   avg_ang_speeds -= avg_ang_speed[avg_ang_speed_offset];
   avg_ang_speeds += abs_ang_speed;
   avg_ang_speed[avg_ang_speed_offset] = abs_ang_speed;
-  if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
-    avg_ang_speed_offset = 0;
 }
 
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
@@ -293,24 +292,26 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   POS_TYPE diff_a = act->pos_a - last->pos_a;
 
   POS_TYPE sqr_dist = diff_x*diff_x + diff_y*diff_y;
+  if (++avg_enc_offset >= VIRT_AVG_CNT)
+    avg_enc_offset = 0;
   avg_encs -= avg_enc[avg_enc_offset];
   avg_encs += sqr_dist;
   avg_enc[avg_enc_offset] = sqr_dist;
-  if (++avg_enc_offset >= VIRT_AVG_CNT)
-    avg_enc_offset = 0;
 
   POS_TYPE abs_ang = fabs(fnorm_angle(diff_a));
+  if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
+    avg_ang_enc_offset = 0;
   avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
   avg_ang_encs += abs_ang;
   avg_ang_enc[avg_ang_enc_offset] = abs_ang;
-  if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
-    avg_ang_enc_offset = 0;
 }
 
 void get_bumpers_virtual(u08* value) {
   *value = 0;
   printf("virtual: avg_encs=%lf; avg_speeds=%lf;", avg_encs, avg_speeds);
   printf(" avg_ang_encs=%lf; avg_ang_speeds=%lf;\n", avg_ang_encs, avg_ang_speeds);
+  printf("virt: encs=%lf; speeds=%lf;", avg_enc[avg_enc_offset], avg_speed[avg_speed_offset]);
+  printf(" ang_encs=%lf; ang_speeds=%lf;\n", avg_ang_enc[avg_ang_enc_offset], avg_ang_speed[avg_ang_speed_offset]);
 }
 
 void get_bumpers(u08* value) {
