@@ -291,7 +291,7 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   if (++avg_enc_offset >= VIRT_AVG_CNT)
     avg_enc_offset = 0;
 
-  POS_TYPE abs_ang = fabs(diff_a);
+  POS_TYPE abs_ang = fabs(norm_angle(diff_a));
   avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
   avg_ang_encs += abs_ang;
   avg_ang_enc[avg_ang_enc_offset] = abs_ang;
