@@ -170,6 +170,7 @@ void motor_init() { // pozor, doporučuje se vypnout echo (stty -F /dev/ttyAMA0 
   pthread_attr_t *thAttr = NULL;
   pthread_create(&motor_loop_tid, thAttr, motor_loop, NULL);
   printf("motor_init \n");
+  virtual_bumpers_init();
 }
 
 void motor_command(POS_TYPE want_x, POS_TYPE want_y, bool reverse, bool stop, int distance_no_angle) {
@@ -227,37 +228,78 @@ void motor_stop() {
 //
 #define VIRT_AVG_CNT 10
 POS_TYPE avg_speed[VIRT_AVG_CNT];
-POS_TYPE avg_speeds = 0;
-int avg_speed_offset = 0;
+POS_TYPE avg_speeds;
+int avg_speed_offset;
+
+POS_TYPE avg_ang_speed[VIRT_AVG_CNT];
+POS_TYPE avg_ang_speeds;
+int avg_ang_speed_offset;
 
 POS_TYPE avg_enc[VIRT_AVG_CNT];
-POS_TYPE avg_encs = 0;
-int avg_enc_offset = 0;
+POS_TYPE avg_encs;
+int avg_enc_offset;
+
+POS_TYPE avg_ang_enc[VIRT_AVG_CNT];
+POS_TYPE avg_ang_encs;
+int avg_enc_ang_offset;
+
+void virtual_bumpers_init() {
+  for(int i = 0; i< VIRT_AVG_CNT; i++) {
+    avg_speed[i] = 0;
+    avg_ang_speed[i] = 0;
+    avg_enc[i] = 0;
+    avg_ang_enc[i] = 0;
+  }
+
+  avg_speeds = 0;
+  avg_speed_offset = 0;
+  avg_ang_speeds = 0;
+  avg_ang_speed_offset = 0;
+
+  avg_encs = 0;
+  avg_enc_offset = 0;
+  avg_ang_encs = 0;
+  avg_enc_ang_offset = 0;
+}
 
 void virtual_bumpers_set_speed(int speed, int ang_speed) {
-  POS_TYPE sqr_speed = speed*speed + ang_speed*ang_speed;
+  POS_TYPE sqr_speed = speed*speed;
 
   avg_speeds -= avg_speed[avg_speed_offset];
   avg_speeds += sqr_speed;
   avg_speed[avg_speed_offset] = sqr_speed;
   if (++avg_speed_offset >= VIRT_AVG_CNT)
     avg_speed_offset = 0;
+
+  avg_ang_speeds -= avg_ang_speed[avg_ang_speed_offset];
+  avg_ang_speeds += ang_speed;
+  avg_ang_speed[avg_ang_speed_offset] = ang_speed;
+  if (++avg_ang_speed_offset >= VIRT_AVG_CNT)
+    avg_ang_speed_offset = 0;
 }
 
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   POS_TYPE diff_x = act->pos_x - last->pos_x;
   POS_TYPE diff_y = act->pos_y - last->pos_y;
+  POS_TYPE diff_a = act->pos_a - last->pos_a;
+
   POS_TYPE sqr_dist = diff_x*diff_x + diff_y*diff_y;
   avg_encs -= avg_enc[avg_enc_offset];
   avg_encs += sqr_dist;
   avg_enc[avg_enc_offset] = sqr_dist;
   if (++avg_enc_offset >= VIRT_AVG_CNT)
     avg_enc_offset = 0;
+
+  avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
+  avg_ang_encs += diff_a;
+  avg_ang_enc[avg_ang_enc_offset] = diff_a;
+  if (++avg_ang_enc_offset >= VIRT_AVG_CNT)
+    avg_ang_enc_offset = 0;
 }
 
 void get_bumpers_virtual(u08* value) {
   *value = 0;
-  printf("virtual: avg_encs=%i; avg_speeds=%i;\n", avg_encs, avg_speeds);
+  printf("virtual: avg_encs=%lf; avg_speeds=%lf;\n", avg_encs, avg_speeds);
 }
 
 void get_bumpers(u08* value) {

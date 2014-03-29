@@ -22,6 +22,7 @@ void motor_command(POS_TYPE want_x, POS_TYPE want_y, bool reverse, bool stop, in
 void motor_get_command(POS_TYPE *want_x, POS_TYPE *want_y, bool *reverse, bool *stop, int *distance_no_angle);
 
 /////////////////////////////
+void virtual_bumpers_init();
 void virtual_bumpers_set_speed(int speed, int ang_speed);
 void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act);
 void get_bumpers_virtual(u08* value);
