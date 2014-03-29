@@ -234,7 +234,7 @@ void motor_stop() {
 
 /////////////////////////////////////////////////
 //
-#define VIRT_AVG_CNT 10
+#define VIRT_AVG_CNT 200
 POS_TYPE avg_speed[VIRT_AVG_CNT];
 POS_TYPE avg_speeds;
 int avg_speed_offset;
