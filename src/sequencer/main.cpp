@@ -10,6 +10,7 @@
 #include "encoder_driver.h"
 #include "motor_driver.h"
 #include "our_time.h"
+#include "strategy.h"
 
 #define time_remain_unload 30
 
@@ -17,12 +18,12 @@ enum STATE {
   EMERGENCY = 0,
   FIXED_ROUTE,
   STANDBY,
-  TRAVELING,
   UNLOADING
 };
 
 int state;
 int last_state;
+int wait_for_bumper = 0;
 
 int init_systems();
 int shut_systems();
@@ -94,9 +95,9 @@ int main_poll() {
 
           // Narazim zezadu, popojedu popredu dopredu
           else if ((bumpers & BUMPER_LEFT_REAR) || (bumpers & BUMPER_RIGHT_REAR)) {
-            if ((last_state == UNLOADING) && (unl_step == 4)) { // reverse
+            if (wait_for_bumper) { // reverse
               motor_command(0,0,0,1, pos_error_allow);
-              printf("bump_action: UNLOAD REAR: stop\n");
+              printf("bump_action: expected action occured: stop\n");
               state = last_state;
             } else {
               dest_x = pos.pos_x + cos(pos.pos_a * PI / 180.0) * emergency_run_dist;
@@ -134,105 +135,7 @@ int main_poll() {
         motor_get_command(NULL, NULL, NULL, &stop, NULL);
         if (!stop)
           break;
-        if (route_variant == 1) {
-          switch(fix_step++) {
-            case 0 :
-              motor_command(1440, 0, 0, 0, pos_error_allow);
-              break;
-            case 1 :
-              motor_command(915, 1500, 0, 0, pos_error_allow);
-              break;
-            case 2 :
-              motor_command(-100, 1500, 0, 0, pos_error_allow);
-              break;
-            default :
-              motor_command(0,0,0,1, pos_error_allow);
-              fix_step = 0;
-              route_variant = 2;
-              last_state = state;
-              state = UNLOADING;
-          }
-        } else if (route_variant == 2) {
-          switch(fix_step++) {
-            case 0 :
-              motor_command(610, 800, 0, 0, pos_error_allow);
-              break;
-            case 1 :
-              motor_command(1220, 800, 0, 0, pos_error_allow);
-              break;
-            case 2 :
-              motor_command(610, 150, 0, 0, pos_error_allow);
-              break;
-            case 3 :
-              motor_command(0, 1500, 0, 0, pos_error_allow);
-              break;
-            case 4 :
-              motor_command(-100, 1500, 0, 0, pos_error_allow);
-              break;
-            default :
-              motor_command(0,0,0,1, pos_error_allow);
-              fix_step = 0;
-              route_variant = 1;
-              last_state = state;
-              state = UNLOADING;
-          }
-        }
-        break;
-      }
-      case TRAVELING : {
-        // Cestuj
-        break;
-      }
-      case UNLOADING : {
-        i2c_taos_sort_disable();
-        bool stop;
-        motor_get_command(NULL, NULL, NULL, &stop, NULL);
-
-        if (!stop)
-          break;
-        switch(unl_step++) {
-          case 0 :
-            motor_command(-50,800,0,0,pos_error_allow);
-            break;
-          case 1 :
-            motor_command(-50,-50,0,0,pos_error_allow);
-            break;
-          case 2 :
-            motor_command(200,-50,0,0,pos_error_allow);
-            break;
-          case 3 :
-            i2c_taos_sort_disable();
-            motor_command(-200,-50,1,0,pos_error_allow);
-            break;
-          case 4 :
-            enc_type pos;
-            enc_get(&pos);
-            if ((pos.pos_x > 0) || (pos.pos_y > 50)) {
-              motor_command(610, 800, 0, 0, pos_error_allow);
-              unl_step = 0;
-              break;
-            }
-            if (ourside == 'L') {
-              i2c_servo_set_servo(SERVO_LEFT, servo_left_open);
-            } else {
-              i2c_servo_set_servo(SERVO_RIGHT, servo_right_open);
-            }
-            usleep(750000);
-            motor_command(800,-50,0,0,pos_error_allow);
-            break;
-          case 5 :
-            if (ourside == 'L') {
-              i2c_servo_set_servo(SERVO_LEFT, servo_left_close);
-            } else {
-              i2c_servo_set_servo(SERVO_RIGHT, servo_right_close);
-            }
-            usleep(750000);
-            unl_step = 0;
-            last_state = state;
-            state = FIXED_ROUTE;
-            i2c_taos_sort_enable();
-            break;
-        }
+        strategy_step();
         break;
       }
       default : {
@@ -250,6 +153,8 @@ int init_systems() {
 
   // Nacti vsechny promenne
   var_load(CONFIG_FILE);
+
+  strategy_load("strategy");
 
   led_init();
   printf("init_systems: 1\n");
