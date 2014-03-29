@@ -241,7 +241,7 @@ int avg_enc_offset;
 
 POS_TYPE avg_ang_enc[VIRT_AVG_CNT];
 POS_TYPE avg_ang_encs;
-int avg_enc_ang_offset;
+int avg_ang_enc_offset;
 
 void virtual_bumpers_init() {
   for(int i = 0; i< VIRT_AVG_CNT; i++) {
@@ -259,7 +259,7 @@ void virtual_bumpers_init() {
   avg_encs = 0;
   avg_enc_offset = 0;
   avg_ang_encs = 0;
-  avg_enc_ang_offset = 0;
+  avg_ang_enc_offset = 0;
 }
 
 void virtual_bumpers_set_speed(int speed, int ang_speed) {
@@ -299,7 +299,8 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
 
 void get_bumpers_virtual(u08* value) {
   *value = 0;
-  printf("virtual: avg_encs=%lf; avg_speeds=%lf;\n", avg_encs, avg_speeds);
+  printf("virtual: avg_encs=%lf; avg_speeds=%lf;", avg_encs, avg_speeds);
+  printf(" avg_ang_encs=%lf; avg_ang_speeds=%lf;\n", avg_ang_encs, avg_ang_speeds);
 }
 
 void get_bumpers(u08* value) {
