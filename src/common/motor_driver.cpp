@@ -52,6 +52,14 @@ inline int norm_angle(int angle) {
   return angle;
 }
 
+inline double fnorm_angle(double angle) {
+  while (angle < -180)
+    angle += 360;
+  while (angle > 180)
+    angle -= 360;
+  return angle;
+}
+
 void motor_go(int speed, int ang_speed) {
   virtual_bumpers_set_speed(speed, ang_speed);
   int dt = pos_now.time - pos_last.time;
@@ -291,7 +299,7 @@ void virtual_bumpers_set_enc(const enc_type *last, const enc_type *act) {
   if (++avg_enc_offset >= VIRT_AVG_CNT)
     avg_enc_offset = 0;
 
-  POS_TYPE abs_ang = fabs(norm_angle(diff_a));
+  POS_TYPE abs_ang = fabs(fnorm_angle(diff_a));
   avg_ang_encs -= avg_ang_enc[avg_ang_enc_offset];
   avg_ang_encs += abs_ang;
   avg_ang_enc[avg_ang_enc_offset] = abs_ang;
