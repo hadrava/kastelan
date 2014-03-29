@@ -3,6 +3,8 @@
 #include <sys/time.h>
 #include <math.h>
 #include <iostream>
+#include <time.h>
+#include <stdlib.h>
 #include "motor_driver.h"
 #include "encoder_driver.h"
 #include "variable_loader.h"
@@ -254,6 +256,7 @@ int avg_ang_enc_offset;
 u08 virtual_state;
 int virtual_last_speed;
 int virtual_last_ang_speed;
+int virtual_state_age;
 
 void virtual_bumpers_init() {
   for(int i = 0; i< VIRT_AVG_CNT; i++) {
@@ -273,6 +276,11 @@ void virtual_bumpers_init() {
   avg_ang_encs = 0;
   avg_ang_enc_offset = 0;
   virtual_state = 0;
+  virtual_last_speed = 0;
+  virtual_last_ang_speed = 0;
+  virtual_state_age = 0;
+
+  srand(time(NULL));
 }
 
 void virtual_bumpers_set_speed(int speed, int ang_speed) {
@@ -322,9 +330,16 @@ void get_bumpers_virtual(u08* value) {
   printf("virt: encs=%lf; speeds=%lf;", avg_enc[avg_enc_offset], avg_speed[avg_speed_offset]);
   printf(" ang_encs=%lf; ang_speeds=%lf;\n", avg_ang_enc[avg_ang_enc_offset], avg_ang_speed[avg_ang_speed_offset]);
   if (((avg_encs < 2.5) && (avg_speeds > 12500)) || ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250))) {
-    if (virtual_state)
+    if (virtual_state) {
       *value = virtual_state;
+      if (virtual_state_age >= 200) {
+        virtual_state_age = 0;
+        *value = (1<<(rand()%6));
+        printf("VIRTUAL: RANDOM: %i\n", *value);
+      }
+    }
     else {
+      virtual_state_age = 0;
       if ((avg_encs < 2.5) && (avg_speeds > 12500)) {
         if (virtual_last_ang_speed > 0) {
           if (virtual_last_speed > 0)
@@ -350,6 +365,7 @@ void get_bumpers_virtual(u08* value) {
     }
   }
   virtual_state = *value;
+  virtual_state_age++;
 }
 
 void get_bumpers(u08* value) {
