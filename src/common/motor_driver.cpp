@@ -341,6 +341,7 @@ void get_bumpers_virtual(u08* value) {
       }
 
       if ((avg_ang_encs < 0.5) && (avg_ang_speeds > 250)) {
+        printf("VIRT\n");
         if(virtual_last_ang_speed > 0)
           *value = BUMPER_RIGHT_SIDE;
         else
