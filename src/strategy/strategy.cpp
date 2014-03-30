@@ -81,18 +81,7 @@ int strategy_load(const char filename[]) {
   strategy_position = 1;
 }
 
-
-void strategy_step() {
-  int next = 1;
-  while (next) {
-    printf("STRATEGY: %i %i %i\n",cycle_position, cycle[cycle_position], strategy_position);
-    next = 0;
-    struct wpt *goal = strat[cycle[cycle_position]] + strategy_position;
-    printf("use wpt %d,%d,%d,%d,%d\n", goal->x,goal->y,goal->rev,goal->unload,goal->sleep);
-    if (goal->unload) {
-      enc_type pos;
-      enc_get(&pos);
-      if (!((pos.pos_x > goal->x) || (pos.pos_y > goal->y))) {
+void do_servo(const struct wpt *goal) {
         if (goal->unload == 1) {
           if (ourside == 'L') {
             i2c_servo_set_servo(SERVO_LEFT, servo_left_open);
@@ -108,6 +97,28 @@ void strategy_step() {
           }
         }
         usleep(goal->sleep);
+}
+
+void strategy_step() {
+  int next = 1;
+  while (next) {
+    printf("STRATEGY: %i %i %i\n",cycle_position, cycle[cycle_position], strategy_position);
+    next = 0;
+    struct wpt *goal = strat[cycle[cycle_position]] + strategy_position;
+    printf("use wpt %d,%d,%d,%d,%d\n", goal->x,goal->y,goal->rev,goal->unload,goal->sleep);
+    if (goal->unload) {
+      enc_type pos;
+      enc_get(&pos);
+      if (!((pos.pos_x > goal->x) || (pos.pos_y > goal->y))) {
+        do_servo(goal);
+      }
+      else {
+        u16 r,g,b,w;
+        char col='N';
+        i2c_taos_get_color();
+        usleep(1000*130);
+        if (i2c_taos_fetch_color(&r, &g, &b, &w) == ourcolor)
+          do_servo(goal);
       }
       next = 1;
     }
