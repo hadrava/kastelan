@@ -21,7 +21,7 @@ run: ../../build_arm/main
 	sudo stty -F /dev/ttyAMA0 ispeed 9600
 	sudo stty -F /dev/ttyAMA0 ospeed 9600
 	cd ../../build_arm/; \
-	  sudo ./main || true
+	  sudo nice -20 ./main || true
 
 clean:
 	rm -f *.o
