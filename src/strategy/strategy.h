@@ -2,6 +2,6 @@
 #define STRATEGY_H_
 
 int strategy_load(const char filename[]);
-void strategy_step();
+int strategy_step();
 
 #endif

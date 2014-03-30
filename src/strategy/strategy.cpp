@@ -99,12 +99,13 @@ void do_servo(const struct wpt *goal) {
         usleep(goal->sleep);
 }
 
-void strategy_step() {
+int strategy_step() {
   int next = 1;
+  struct wpt *goal;
   while (next) {
     printf("STRATEGY: %i %i %i\n",cycle_position, cycle[cycle_position], strategy_position);
     next = 0;
-    struct wpt *goal = strat[cycle[cycle_position]] + strategy_position;
+    goal = strat[cycle[cycle_position]] + strategy_position;
     printf("use wpt %d,%d,%d,%d,%d\n", goal->x,goal->y,goal->rev,goal->unload,goal->sleep);
     if (goal->unload) {
       enc_type pos;
@@ -122,19 +123,19 @@ void strategy_step() {
       }
       next = 1;
     }
-    else if (goal->rev == 0) {
+    else if ((goal->rev&3) == 0) {
       i2c_taos_sort_enable();
       motor_command(goal->x, goal->y, 0, 0, pos_error_allow);
     }
-    else if (goal->rev == 1) {
+    else if ((goal->rev&3) == 1) {
       i2c_taos_sort_enable();
       motor_command(goal->x, goal->y, 1, 0, pos_error_allow);
     }
-    else if (goal->rev == 2) {
+    else if ((goal->rev&3) == 2) {
       i2c_taos_sort_disable();
       motor_command(goal->x, goal->y, 0, 0, pos_error_allow);
     }
-    else if (goal->rev == 3) {
+    else if ((goal->rev&3) == 3) {
       i2c_taos_sort_disable();
       motor_command(goal->x, goal->y, 1, 0, pos_error_allow);
     }
@@ -148,4 +149,5 @@ void strategy_step() {
     }
   }
   printf("STRATEGY: done\n");
+  return (goal->rev >> 2)&1;
 }

@@ -135,7 +135,7 @@ int main_poll() {
         motor_get_command(NULL, NULL, NULL, &stop, NULL);
         if (!stop)
           break;
-        strategy_step();
+        wait_for_bumper = strategy_step();
         break;
       }
       default : {
