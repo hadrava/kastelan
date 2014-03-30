@@ -133,4 +133,5 @@ void strategy_step() {
         cycle_position = 0;
     }
   }
+  printf("STRATEGY: done\n";
 }
