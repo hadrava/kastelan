@@ -1,6 +1,6 @@
 strategies 3
 
-begin 5
+begin 7
 wpt -50,800,2,0,0
 wpt -50,-50,2,0,0
 wpt 200,-50,2,0,0
