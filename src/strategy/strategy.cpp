@@ -83,6 +83,7 @@ int strategy_load(const char filename[]) {
 void strategy_step() {
   int next = 1;
   while (next) {
+    printf("STRATEGY: %i %i %i\n",cycle_position, cycle[cycle_position], strategy_position);
     next = 0;
     struct wpt *goal = strat[cycle[cycle_position]] + strategy_position;
     if (goal->unload) {
