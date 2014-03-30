@@ -36,6 +36,7 @@ int strategy_load(const char filename[]) {
   while (fscanf(f, "%s%s", name, value) >= 0) {
     if (strcmp(name,"strategies") == 0) {
       sscanf(value, "%d", &i);
+      printf("strat: alloc %i\n", i * sizeof(struct wpt *));
       strat = (struct wpt **) calloc(i, sizeof(struct wpt *));
       i = -1;
       continue;
@@ -43,6 +44,7 @@ int strategy_load(const char filename[]) {
     if (strcmp(name,"begin") == 0) {
       sscanf(value, "%d", &j);
       i++;
+      printf("strat: alloc %i\n", (j+1) * sizeof(struct wpt));
       strat[i] = (struct wpt *) calloc(j+1, sizeof(struct wpt));
       struct wpt tmp;
       tmp.x=j;
@@ -62,8 +64,9 @@ int strategy_load(const char filename[]) {
     }
     if (strcmp(name,"fixed") == 0) {
       sscanf(value, "%d", &cycle_size);
+      printf("strat: alloc %i\n", cycle_size * sizeof(int));
       cycle = (int *) calloc(cycle_size, sizeof(int));
-      cycle_size;
+      cycle_size = 0;
       continue;
     }
     if (strcmp(name,"str") == 0) {
