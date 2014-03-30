@@ -181,6 +181,7 @@ void motor_init() { // pozor, doporučuje se vypnout echo (stty -F /dev/ttyAMA0 
 
 void motor_command(POS_TYPE want_x, POS_TYPE want_y, bool reverse, bool stop, int distance_no_angle) {
   pthread_mutex_lock(&motor_lock);
+   printf("motor_command %lf %lf %i %i %i\n", want_x, want_y, reverse, stop, distance_no_angle);
    command_want_x  = want_x;
    command_want_y  = want_y;
    command_reverse = reverse;

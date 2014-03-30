@@ -55,11 +55,13 @@ int strategy_load(const char filename[]) {
     if (strcmp(name,"wpt") == 0) {
       int x,y,rev,unload,sleep;
       sscanf(value, "%d,%d,%d,%d,%d", &x,&y,&rev,&unload,&sleep);
+      printf("add wpt %d,%d,%d,%d,%d\tto%d %d\n", x,y,rev,unload,sleep,i,j);
       strat[i][j].x = x;
       strat[i][j].y = y;
       strat[i][j].rev = rev;
       strat[i][j].unload = unload;
       strat[i][j].sleep = sleep;
+      j++;
       continue;
     }
     if (strcmp(name,"fixed") == 0) {
@@ -86,6 +88,7 @@ void strategy_step() {
     printf("STRATEGY: %i %i %i\n",cycle_position, cycle[cycle_position], strategy_position);
     next = 0;
     struct wpt *goal = strat[cycle[cycle_position]] + strategy_position;
+    printf("use wpt %d,%d,%d,%d,%d\n", goal->x,goal->y,goal->rev,goal->unload,goal->sleep);
     if (goal->unload) {
       enc_type pos;
       enc_get(&pos);
@@ -133,5 +136,5 @@ void strategy_step() {
         cycle_position = 0;
     }
   }
-  printf("STRATEGY: done\n";
+  printf("STRATEGY: done\n");
 }
