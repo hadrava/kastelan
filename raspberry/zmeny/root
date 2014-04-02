@@ -83,3 +83,5 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="16c0", ATTR{idPro
 EOF
 
 raspi-config -> 5 (Enable camera)
+
+apt-get install gitk
