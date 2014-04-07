@@ -29,7 +29,6 @@ int trans_y(int y) {
   return WIN_SIZE_Y - (y + 350)/4;
 }
 
-int x = 0, y = 0, a = 0;
 int history_x[HISTORY_SIZE];
 int history_y[HISTORY_SIZE];
 int history_a[HISTORY_SIZE];
@@ -119,6 +118,9 @@ void paint(Window w) {
     mam_kreslit_y = history_y[i];
   }
 
+  int x = history_x[(history_akt + HISTORY_SIZE - 1) % HISTORY_SIZE];
+  int y = history_y[(history_akt + HISTORY_SIZE - 1) % HISTORY_SIZE];
+  int a = history_a[(history_akt + HISTORY_SIZE - 1) % HISTORY_SIZE];
 
   cairo_set_source_rgba(cairo, 0, 1, 0, 1);
   cairo_move_to(cairo, trans_x(x+START_X-32*cos(a*PI/180.0)+32*sin(a*PI/180.0)), trans_y(y+START_Y-32*sin(a*PI/180.0)-32*cos(a*PI/180.0)));
@@ -141,20 +143,14 @@ void paint(Window w) {
 }
 
 void *scanf_loop(void *arg) {
+  int x = 0, y = 0, a = 0, b = 0;
+  int step = 0;
   char string[300];
-  int tx=0,ty=0,ta=0,tb=0;
+  int tx=0,ty=0,ta=0;
   while(1) {
     scanf("%[^\n]\n", string);
     if (string[0]=='b') {
-      sscanf(string, "bumpers: %x", &tb);
-      pthread_mutex_lock(&scanf_lock);
-       history_x[history_akt]=x;
-       history_y[history_akt]=y;
-       history_a[history_akt]=a;
-       history_bumpers[history_akt]=tb;
-       history_akt = (history_akt+1) % HISTORY_SIZE;
-      pthread_mutex_unlock(&scanf_lock);
-      usleep(2000);// i tak dojde ke zdržení
+      sscanf(string, "bumpers: %x", &b);
     }
     if (string[0]=='e') {
       char str[40];
@@ -174,16 +170,18 @@ void *scanf_loop(void *arg) {
        history_x[history_akt]=x;
        history_y[history_akt]=y;
        history_a[history_akt]=a;
-       history_bumpers[history_akt]=tb;
+       history_bumpers[history_akt]=b;
        history_akt = (history_akt+1) % HISTORY_SIZE;
       pthread_mutex_unlock(&scanf_lock);
+      step++;
+      usleep(2000);// i tak dojde ke zdržení
     }
     if (string[0]=='W') {
       char str[40];
-      int ttb;
-      sscanf(string, "%s %s %s %s %s %d%s %d%s %d%s %s %x" , str,str,str,str,str, &tx,str, &ty,str, &ta, str, str, &ttb);
+      int tb;
+      sscanf(string, "%s %s %s %s %s %d%s %d%s %d%s %s %x" , str,str,str,str,str, &tx,str, &ty,str, &ta, str, str, &tb);
       if (str[0] == 'b')
-        tb = ttb;
+        b = tb;
 //FIXME vedohrani HACK torus mode
       while (tx < -950)
         tx+=3200;
@@ -194,14 +192,7 @@ void *scanf_loop(void *arg) {
       while (ty > 2400)
         ty-=3200;
 //
-      pthread_mutex_lock(&scanf_lock);
-       x=tx, y=ty, a=ta;
-       history_x[history_akt]=x;
-       history_y[history_akt]=y;
-       history_a[history_akt]=a;
-       history_bumpers[history_akt]=tb;
-       history_akt = (history_akt+1) % HISTORY_SIZE;
-      pthread_mutex_unlock(&scanf_lock);
+      x=tx, y=ty, a=ta;
     }
   }
 }
