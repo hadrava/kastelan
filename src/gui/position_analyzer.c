@@ -252,7 +252,7 @@ int main() {
       case MapNotify:
       case Expose:
       case ConfigureNotify:
-      default:
+      //default:
         paint(w);
         break;
     }
