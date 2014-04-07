@@ -40,8 +40,10 @@ pthread_mutex_t scanf_lock;
 pthread_t redraw_loop_tid;
 
 
-void paint(Window w) {
+void paint(int write_file_num) {
+#ifdef WINDOW
  pthread_mutex_lock(&scanf_lock);
+#endif
   cairo_set_source_rgba(cairo, 0, 0, 0, 1);
   cairo_rectangle(cairo, 0, 0, WIN_SIZE_X, WIN_SIZE_Y);
   cairo_fill(cairo);
@@ -137,9 +139,18 @@ void paint(Window w) {
 
   cairo_stroke(cairo);
 
+#ifdef WINDOW
   cairo_set_source_surface(cairowin, surfaceimg, 0, 0);
+#endif
+  if (write_file_num + 1) {
+    char filename [100];
+    sprintf(filename, "image-%010i.png", write_file_num);
+    cairo_surface_write_to_png(surfaceimg, filename);
+  }
+#ifdef WINDOW
   cairo_paint(cairowin);
  pthread_mutex_unlock(&scanf_lock);
+#endif
 }
 
 void *scanf_loop(void *arg) {
@@ -165,16 +176,22 @@ void *scanf_loop(void *arg) {
       while (ty > 2400)
         ty-=3200;
 //
+#ifdef WINDOW
       pthread_mutex_lock(&scanf_lock);
+#endif
        x=tx, y=ty, a=ta;
        history_x[history_akt]=x;
        history_y[history_akt]=y;
        history_a[history_akt]=a;
        history_bumpers[history_akt]=b;
        history_akt = (history_akt+1) % HISTORY_SIZE;
+#ifdef WINDOW
       pthread_mutex_unlock(&scanf_lock);
-      step++;
       usleep(2000);// i tak dojde ke zdržení
+#else
+      paint(step);
+      step++;
+#endif
     }
     if (string[0]=='W') {
       char str[40];
@@ -200,12 +217,15 @@ void *scanf_loop(void *arg) {
 void *redraw_loop(void *arg) {
   Window w = * (Window *) arg;
   while(1) {
-    paint(w);
+#ifdef WINDOW
+    paint(-1);
+#endif
     usleep(10000);
   }
 }
 
 int main() {
+#ifdef WINDOW
   if (!XInitThreads()) {
     fprintf(stderr, "Error: XInitThreads() returned non-zero status.\n");
     return 1;
@@ -222,12 +242,18 @@ int main() {
                           0, 0, WIN_SIZE_X, WIN_SIZE_Y, 0, 0, BlackPixel(dpy, 0));
   XSelectInput(dpy, w, StructureNotifyMask | ExposureMask);
   XMapWindow(dpy, w);
+#endif
 
+#ifdef WINDOW
   surface = cairo_xlib_surface_create(dpy, w, DefaultVisual(dpy, 0), WIN_SIZE_X, WIN_SIZE_Y);
+#else
+  surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIN_SIZE_X, WIN_SIZE_Y);
+#endif
   cairowin = cairo_create(surface);
   surfaceimg = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIN_SIZE_X, WIN_SIZE_Y);
   cairo = cairo_create(surfaceimg);
 
+#ifdef WINDOW
   pthread_mutex_init(&scanf_lock, NULL);
   pthread_attr_t *thAttr = NULL;
   pthread_create(&scanf_loop_tid, thAttr, scanf_loop, NULL);
@@ -244,11 +270,14 @@ int main() {
       case Expose:
       case ConfigureNotify:
       //default:
-        paint(w);
+        paint(-1);
         break;
     }
 
   }
+#else
+  scanf_loop(NULL);
+#endif
 
   return 0;
 }
