@@ -158,7 +158,7 @@ void *scanf_loop(void *arg) {
   int step = 0;
   char string[300];
   int tx=0,ty=0,ta=0;
-  while(1) {
+  while(!feof(stdin)) {
     scanf("%[^\n]\n", string);
     if (string[0]=='b') {
       sscanf(string, "bumpers: %x", &b);
