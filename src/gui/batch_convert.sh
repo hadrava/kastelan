@@ -32,10 +32,10 @@ listB="logs/g1/druhy_zapas_angstrom logs/g1/ctvrty logs/g1/sesty logs/final/1 lo
 #listB="logs/final/7_chees"
 
 make gui_image
-rm -rf old_tmp/
-rm -rf old_out/
-mv tmp old_tmp
-mv out old_out
+[ -d tmp ] && rm -rf old_tmp/
+[ -d out ] && rm -rf old_out/
+[ -d tmp ] && mv tmp old_tmp
+[ -d out ] && mv out old_out
 mkdir -p out
 
 for i in $listR; do
