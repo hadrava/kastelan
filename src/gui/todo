@@ -1,5 +1,10 @@
-zjištovat a vykreslovat směr/pozici kam chceme jet.
 načítat barvu
 a měnit hřiště dle potřeby.
 červená má mizet rychleji
 hezký by bylo vidět, přes jakou část hřiště jsme opravdu sbírali.
+
+
+odchytit velké skoky: řekněme větší než 1000
+   Zjistit číslo framu
+   předat ten obrázek Pavlovi
+    (obrázek těsně před zaseknutím)
