@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #define PI  3.14159265
 #define WIN_SIZE_X 800
@@ -28,6 +29,13 @@ int trans_x(int x) {
 int trans_y(int y) {
   return WIN_SIZE_Y - (y + 350)/4;
 }
+
+char our_color = 'R';
+int command_x = 0;
+int command_y = 0;
+int command_rev = 0;
+int command_brake = 1;
+int command_distance = 0;
 
 int history_x[HISTORY_SIZE];
 int history_y[HISTORY_SIZE];
@@ -53,11 +61,17 @@ void paint(int write_file_num) {
   cairo_rectangle(cairo, trans_x(0), trans_y(2500), 2500/4, 2500/4);
   cairo_stroke(cairo);
 
-  cairo_set_source_rgba(cairo, 1, 0, 0, 1);
+  if (our_color=='R')
+    cairo_set_source_rgba(cairo, 1, 0, 0, 1);
+  else
+    cairo_set_source_rgba(cairo, 0, 0, 1, 1);
   cairo_rectangle(cairo, trans_x(0), trans_y(700), 700/4, 700/4);
   cairo_stroke(cairo);
 
-  cairo_set_source_rgba(cairo, 0, 0, 1, 1);
+  if (our_color=='R')
+    cairo_set_source_rgba(cairo, 0, 0, 1, 1);
+  else
+    cairo_set_source_rgba(cairo, 1, 0, 0, 1);
   cairo_rectangle(cairo, trans_x(1800), trans_y(2500), 700/4, 700/4);
   cairo_stroke(cairo);
 
@@ -139,6 +153,22 @@ void paint(int write_file_num) {
 
   cairo_stroke(cairo);
 
+  // motor_command
+  if (!command_brake) {
+    if (command_rev)
+      cairo_set_source_rgba(cairo, 0, 0, 1, 1);
+    else
+      cairo_set_source_rgba(cairo, 1, 1, 1, 1);
+    x = command_x;
+    y = command_y;
+    cairo_move_to(cairo, trans_x(x+START_X-32), trans_y(y+START_Y-32));
+    cairo_line_to(cairo, trans_x(x+START_X+32), trans_y(y+START_Y+32));
+    cairo_move_to(cairo, trans_x(x+START_X-32), trans_y(y+START_Y+32));
+    cairo_line_to(cairo, trans_x(x+START_X+32), trans_y(y+START_Y-32));
+
+    cairo_stroke(cairo);
+  }
+
 #ifdef WINDOW
   cairo_set_source_surface(cairowin, surfaceimg, 0, 0);
 #endif
@@ -153,8 +183,12 @@ void paint(int write_file_num) {
 #endif
 }
 
+#define ABS(X)  (((X)>0)?(X):(-(X)))
+
+int old_el = 0, old_er = 0;
 void *scanf_loop(void *arg) {
   int x = 0, y = 0, a = 0, b = 0;
+  int el = 0, er = 0;
   int step = 0;
   char string[300];
   int tx=0,ty=0,ta=0;
@@ -165,7 +199,10 @@ void *scanf_loop(void *arg) {
     }
     if (string[0]=='e') {
       char str[40];
-      sscanf(string, "%s %s %s %s %s %d%s %d%s %d" , str,str,str,str,str, &tx,str, &ty,str, &ta);
+      sscanf(string, "%s %d%s %d %s %s %d%s %d%s %d" , str,&el,str,&er,str,str, &tx,str, &ty,str, &ta);
+      printf("speed %d %d\n", ABS(old_el-el), ABS(old_er-er));
+      old_el=el;
+      old_er=er;
 //FIXME vedohrani HACK torus mode
       while (tx < -950)
         tx+=3200;
@@ -190,6 +227,7 @@ void *scanf_loop(void *arg) {
       usleep(2000);// i tak dojde ke zdržení
 #else
       paint(step);
+      //paint(-1);
       step++;
 #endif
     }
@@ -211,6 +249,13 @@ void *scanf_loop(void *arg) {
 //
       x=tx, y=ty, a=ta;
     }
+    if ((string[0]=='m') && (string[6]=='c')) {// motor_command
+      char str[40];
+      double x, y;
+      sscanf(string, "%s %lf %lf %d %d %d" , str,&x,&y,&command_rev, &command_brake, &command_distance);
+      command_x = x;
+      command_y = y;
+    }
   }
 }
 
@@ -224,7 +269,16 @@ void *redraw_loop(void *arg) {
   }
 }
 
-int main() {
+int main(int argc, char **argv) {
+  int i;
+  for (i = 1; i<argc; i++) {
+    if ((argv[i][0]=='-') && (argv[i][1]=='c'))
+      if (argv[i][2])
+        our_color = argv[i][2];
+      else if (i+1 < argc)
+        our_color = argv[i+1][0];
+  }
+
 #ifdef WINDOW
   if (!XInitThreads()) {
     fprintf(stderr, "Error: XInitThreads() returned non-zero status.\n");
