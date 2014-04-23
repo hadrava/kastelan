@@ -93,6 +93,10 @@ void paint(int write_file_num) {
       cairo_line_to(cairo, trans_x(history_x[i]+START_X), trans_y(history_y[i]+START_Y));
       cairo_stroke(cairo);
     }
+    // Let the bumpers disappear faster than yellow line
+    double old_j = j;
+    j -= 0.5;
+    j *= 2;
     if (history_bumpers[i] & 1) {
       cairo_set_source_rgba(cairo, 1, 0, 0, j);
       cairo_move_to(cairo, trans_x(history_x[i]+START_X +90*cos(history_a[i]*PI/180.0)  +0*sin(history_a[i]*PI/180.0)), trans_y(history_y[i]+START_Y +90*sin(history_a[i]*PI/180.0)  -0*cos(history_a[i]*PI/180.0)));
@@ -129,6 +133,7 @@ void paint(int write_file_num) {
       cairo_line_to(cairo, trans_x(history_x[i]+START_X +90*cos(history_a[i]*PI/180.0)-250*sin(history_a[i]*PI/180.0)), trans_y(history_y[i]+START_Y +90*sin(history_a[i]*PI/180.0)+250*cos(history_a[i]*PI/180.0)));
       cairo_stroke(cairo);
     }
+    j = old_j;
     cairo_move_to(cairo, trans_x(history_x[i]+START_X), trans_y(history_y[i]+START_Y));
     mam_kreslit_x = history_x[i];
     mam_kreslit_y = history_y[i];
