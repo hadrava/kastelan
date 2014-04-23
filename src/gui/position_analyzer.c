@@ -23,6 +23,9 @@ static cairo_t *cairowin;
 static cairo_t *cairo;
 static Display *dpy;
 
+static cairo_surface_t *final_image_surface;
+static cairo_t *final_image_cairo;
+
 int trans_x(int x) {
   return (x + 350)/4;
 }
@@ -235,6 +238,28 @@ void *scanf_loop(void *arg) {
       //paint(-1);
       step++;
 #endif
+      // final image
+      int history_prev = (history_akt - 2 + HISTORY_SIZE) % HISTORY_SIZE;
+      cairo_set_source_rgba(final_image_cairo, 1, 1, 1, 0.3);
+      cairo_set_line_width(final_image_cairo, 0);
+      cairo_move_to(final_image_cairo, trans_x(x+START_X +90*cos(a*PI/180.0)+185*sin(a*PI/180.0)), trans_y(y+START_Y +90*sin(a*PI/180.0)-185*cos(a*PI/180.0)));
+      cairo_line_to(final_image_cairo, trans_x(x+START_X +90*cos(a*PI/180.0)-185*sin(a*PI/180.0)), trans_y(y+START_Y +90*sin(a*PI/180.0)+185*cos(a*PI/180.0)));
+      x=history_x[history_prev];
+      y=history_y[history_prev];
+      a=history_a[history_prev];
+      cairo_line_to(final_image_cairo, trans_x(x+START_X +90*cos(a*PI/180.0)-185*sin(a*PI/180.0)), trans_y(y+START_Y +90*sin(a*PI/180.0)+185*cos(a*PI/180.0)));
+      cairo_line_to(final_image_cairo, trans_x(x+START_X +90*cos(a*PI/180.0)+185*sin(a*PI/180.0)), trans_y(y+START_Y +90*sin(a*PI/180.0)-185*cos(a*PI/180.0)));
+      cairo_close_path(final_image_cairo);
+      cairo_stroke_preserve(final_image_cairo);
+      cairo_fill(final_image_cairo);
+
+
+      // yellow line
+      cairo_set_source_rgba(final_image_cairo, 1, 1, 0, 1);
+      cairo_set_line_width(final_image_cairo, 1);
+      cairo_move_to(final_image_cairo, trans_x(x+START_X), trans_y(y+START_Y));
+      cairo_line_to(final_image_cairo, trans_x(tx+START_X), trans_y(ty+START_Y));
+      cairo_stroke(final_image_cairo);
     }
     if (string[0]=='W') {
       char str[40];
@@ -262,6 +287,7 @@ void *scanf_loop(void *arg) {
       command_y = y;
     }
   }
+  cairo_surface_write_to_png(final_image_surface, "image-final.png");
 }
 
 void *redraw_loop(void *arg) {
@@ -311,6 +337,33 @@ int main(int argc, char **argv) {
   cairowin = cairo_create(surface);
   surfaceimg = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIN_SIZE_X, WIN_SIZE_Y);
   cairo = cairo_create(surfaceimg);
+
+  // Final image
+  final_image_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, WIN_SIZE_X, WIN_SIZE_Y);
+  final_image_cairo = cairo_create(final_image_surface);
+  cairo_set_source_rgba(final_image_cairo, 0, 0, 0, 1);
+  cairo_rectangle(final_image_cairo, 0, 0, WIN_SIZE_X, WIN_SIZE_Y);
+  cairo_fill(final_image_cairo);
+
+  cairo_set_line_width(final_image_cairo, 1);
+  cairo_set_source_rgba(final_image_cairo, 0.4, 0.4, 0.4, 1);
+  cairo_rectangle(final_image_cairo, trans_x(0), trans_y(2500), 2500/4, 2500/4);
+  cairo_stroke(final_image_cairo);
+
+  if (our_color=='R')
+    cairo_set_source_rgba(final_image_cairo, 1, 0, 0, 1);
+  else
+    cairo_set_source_rgba(final_image_cairo, 0, 0, 1, 1);
+  cairo_rectangle(final_image_cairo, trans_x(0), trans_y(700), 700/4, 700/4);
+  cairo_stroke(final_image_cairo);
+
+  if (our_color=='R')
+    cairo_set_source_rgba(final_image_cairo, 0, 0, 1, 1);
+  else
+    cairo_set_source_rgba(final_image_cairo, 1, 0, 0, 1);
+  cairo_rectangle(final_image_cairo, trans_x(1800), trans_y(2500), 700/4, 700/4);
+  cairo_stroke(final_image_cairo);
+  // end of final image
 
 #ifdef WINDOW
   pthread_mutex_init(&scanf_lock, NULL);
