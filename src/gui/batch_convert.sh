@@ -16,7 +16,7 @@ convert() {
 	mkdir -p out/$j
 	tail -n+2 tmp/${i}/gui_image.log | cat -n | grep 'speed.*[0-9][0-9][0-9][0-9]' | sed 's/speed.*/- 1 + 10000000000/' | while read line; do expr $line;done | sed 's#^1\(.*\)#cp tmp/'${i}'/image-\1.png out/'$j'/#' | sh
 
-	cp tmp/${i}/out.mkv out/${j}.mkv
+	cp tmp/${i}/out.avi out/${j}.avi
 	cp tmp/${i}/gui_image.log out/${j}.log
 }
 
